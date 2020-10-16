@@ -48,18 +48,6 @@ class Dashboard_Payment_Admin extends CI_Controller {
 		return $page;
 	}
 
-	public function index()
-	{
-		$css = "";
-		$js = "";
-		$path = "";
-		$data = array(
-			"page" => $this->load("Dashboard CBD Checker", $path, "Dashboard", ""),
-			"content" =>$this->load->view('dashboardPayment/admin/index', false, true)
-		);
-		$this->load->view('template/default_template', $data);
-	}
-
 	public function case_data()
 	{
 		$css = "";
@@ -69,8 +57,23 @@ class Dashboard_Payment_Admin extends CI_Controller {
 			'data_status' => $this->new_case->get_status(), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard CBD Checker - Data Case", $path, "Data Case", ""),
+			"page" => $this->load("Dashboard Payment Admin - Data Case", $path, "Data Case", ""),
 			"content" =>$this->load->view('dashboardPayment/admin/case-data', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function initial_batching()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("Dashboard Payment Admin - Initial Batching", $path, "Batching Case", "Initial Batching"),
+			"content" =>$this->load->view('dashboardPayment/admin/initial-batching', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -84,7 +87,7 @@ class Dashboard_Payment_Admin extends CI_Controller {
 			'data_status' => $this->new_case->get_status(), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard CBD Checker - Batching Case", $path, "Batching Case", "Proceed Status"),
+			"page" => $this->load("Dashboard Payment Admin - Batching Case", $path, "Batching Case", "Proceed Status"),
 			"content" =>$this->load->view('dashboardPayment/admin/batching-case', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
@@ -111,7 +114,7 @@ class Dashboard_Payment_Admin extends CI_Controller {
 		$js = "";
 		$path = "";
 		$data = array(
-			"page" => $this->load("Dashboard Admin - CPV List", $path, "CPV List", ""),
+			"page" => $this->load("Dashboard Payment Admin - CPV List", $path, "CPV List", ""),
 			"content" =>$this->load->view('dashboardPayment/admin/list-cpv', false, true)
 		);
 		$this->load->view('template/default_template', $data);
@@ -126,7 +129,7 @@ class Dashboard_Payment_Admin extends CI_Controller {
 			'cpv_detail' => $this->new_case->cpv_detail($cpv_id), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Admin - CPV Detail", $path, "CPV List", "CPV Detail"),
+			"page" => $this->load("Dashboard Payment Admin - CPV Detail", $path, "CPV List", "CPV Detail"),
 			"content" =>$this->load->view('dashboardPayment/admin/new-cpv-detail-cashless', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
@@ -141,7 +144,7 @@ class Dashboard_Payment_Admin extends CI_Controller {
 			'cpv_detail' => $this->new_case->cpv_detail($cpv_id), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Admin - CPV Detail", $path, "CPV List", "CPV Detail"),
+			"page" => $this->load("Dashboard Payment Admin - CPV Detail", $path, "CPV List", "CPV Detail"),
 			"content" =>$this->load->view('dashboardPayment/admin/new-cpv-detail-reimbursement', $get, true)
 		);
 		$this->load->view('template/default_template', $data);

@@ -6,9 +6,9 @@
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
             <ul id="sidebarnav">
-                <li class="nav-small-cap">PERSONAL</li>
+                <!-- <li class="nav-small-cap">PERSONAL</li>
                 <li> <a class="<?php if($this->uri->segment(1) == 'Dashboard_Admin' && $this->uri->segment(2) == ''){echo'active';} ?>active" href="<?= base_url(); ?>Dashboard_Admin" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard </a>
-                </li>
+                </li> -->
                 <!-- <li class="nav-small-cap">OBV CASE</li>
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-table"></i><span class="hide-menu">OBV Case</span></a>
                     <ul aria-expanded="false" class="collapse">
@@ -29,6 +29,7 @@
                 <li class="nav-small-cap">BATCHING CASE</li>
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Batching Case</span></a>
                     <ul aria-expanded="false" class="collapse">
+                        <li><a href="<?= base_url(); ?>Dashboard_Admin/initial_batching">Initial Batching</a></li>
                         <li><a href="<?= base_url(); ?>Dashboard_Admin/batching_case">Proceed Status</a></li>
                         <li><a href="<?= base_url(); ?>Dashboard_Admin/payment_batch">Generate CPV</a></li>
                     </ul>
@@ -42,6 +43,10 @@
                 </li> -->
                 <li class="nav-small-cap">CPV</li>
                 <li class=""> <a href="<?= base_url(); ?>Dashboard_Admin/list_cpv" aria-expanded="false"><i class="mdi mdi-file-excel"></i><span class="hide-menu">CPV List</span></a>
+                </li>
+
+                <li class="nav-small-cap">Follow Up Payment</li>
+                <li class=""> <a href="<?= base_url(); ?>Dashboard_Admin/follow_up_payment" aria-expanded="false"><i class="mdi mdi-file-excel"></i><span class="hide-menu">Send Back Batching List</span></a>
                 </li>
                 <!-- <li class="nav-small-cap">HISTORY</li>
                 <li class=""> <a href="<?= base_url(); ?>Dashboard_Admin/history_batching" aria-expanded="false"><i class="mdi mdi-bookmark"></i><span class="hide-menu">History Batching</span></a>

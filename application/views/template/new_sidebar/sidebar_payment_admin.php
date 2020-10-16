@@ -6,9 +6,9 @@
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
             <ul id="sidebarnav">
-                <li class="nav-small-cap">PERSONAL</li>
+                <!-- <li class="nav-small-cap">PERSONAL</li>
                 <li> <a class="<?php if($this->uri->segment(1) == 'Dashboard_Payment_Admin' && $this->uri->segment(2) == ''){echo'active';} ?>active" href="<?= base_url(); ?>Dashboard_Payment_Admin" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard </a>
-                </li>
+                </li> -->
                 <!-- <li class="nav-small-cap">OBV CASE</li>
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-table"></i><span class="hide-menu">OBV Case</span></a>
                     <ul aria-expanded="false" class="collapse">
@@ -29,6 +29,7 @@
                 <li class="nav-small-cap">BATCHING CASE</li>
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Batching Case</span></a>
                     <ul aria-expanded="false" class="collapse">
+                        <li><a href="<?= base_url(); ?>Dashboard_Payment_Admin/initial_batching">Initial Batching</a></li>
                         <li><a href="<?= base_url(); ?>Dashboard_Payment_Admin/batching_case">Proceed Status</a></li>
                         <li><a href="<?= base_url(); ?>Dashboard_Payment_Admin/payment_batch">Generate CPV</a></li>
                     </ul>

@@ -57,7 +57,7 @@
                                 <a href="javascript:void(0)" class="text-center db"><img src="<?= base_url(); ?>app-assets/images/aai.png" alt="Home" /><br/><img src="<?= base_url(); ?>app-assets/images/payment-text-2.png" alt="Home" /></a>
                                 <div class="form-group m-t-40">
                                     <div class="col-xs-12">
-                                        <input class="form-control" name="username" id="password" type="text" required="" placeholder="Username"> 
+                                        <input class="form-control" name="username" id="username" type="text" required="" placeholder="Username"> 
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -71,7 +71,7 @@
                                             <input id="checkbox-signup" type="checkbox">
                                             <label for="checkbox-signup"> Remember me </label>
                                         </div> --> 
-                                        <a href="javascript:void(0)" id="to-recover" class="text-dark pull-right"> Forgot Password?</a> 
+                                        <!-- <a href="javascript:void(0)" id="to-recover" class="text-dark pull-right"> Forgot Password?</a> --> 
                                     </div>
                                 </div>
                                 <div class="form-group text-center m-t-20">
@@ -94,7 +94,7 @@
     <!-- ============================================================== -->
     <script src="<?= base_url(); ?>app-assets/plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap tether Core JavaScript -->
-    <script src="<?= base_url(); ?>app-assets/plugins/bootstrap/js/popper.min.html"></script>
+    <script src="<?= base_url(); ?>app-assets/plugins/popper/popper.min.js"></script>
     <script src="<?= base_url(); ?>app-assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <!-- slimscrollbar scrollbar JavaScript -->
     <script src="<?= base_url(); ?>app-assets/js/jquery.slimscroll.js"></script>

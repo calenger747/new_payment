@@ -48,33 +48,6 @@ class Dashboard_CBD_Checker extends CI_Controller {
 		return $page;
 	}
 
-	public function index()
-	{
-		$css = "";
-		$js = "";
-		$path = "";
-		$data = array(
-			"page" => $this->load("Dashboard CBD Checker", $path, "Dashboard", ""),
-			"content" =>$this->load->view('dashboardCBD/checker/index', false, true)
-		);
-		$this->load->view('template/default_template', $data);
-	}
-
-	public function case_data()
-	{
-		$css = "";
-		$js = "";
-		$path = "";
-		$get = array(
-			'data_status' => $this->new_case->get_status(), 
-		);
-		$data = array(
-			"page" => $this->load("Dashboard CBD Checker - Data Case", $path, "Data Case", ""),
-			"content" =>$this->load->view('dashboardCBD/checker/case-data', $get, true)
-		);
-		$this->load->view('template/default_template', $data);
-	}
-
 	public function batching_case()
 	{
 		$css = "";
@@ -90,17 +63,31 @@ class Dashboard_CBD_Checker extends CI_Controller {
 		$this->load->view('template/default_template', $data);
 	}
 
-	public function payment_batch()
+	// Follow Up Payment
+	public function follow_up_payment()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard CBD Checker - Follow Up Payment List", $path, "Follow Up Payment List", ""),
+			"content" =>$this->load->view('dashboardCBD/checker/follow-up-payment', false, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	// Follow Up Payment Detail
+	public function new_fup_detail($fup_id)
 	{
 		$css = "";
 		$js = "";
 		$path = "";
 		$get = array(
-			'data_status' => $this->new_case->get_status(), 
+			'fup_detail' => $this->new_case->fup_detail($fup_id), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Admin - Generate CPV", $path, "Batching Case", "Generate CPV"),
-			"content" =>$this->load->view('dashboardCBD/checker/payment-batch', $get, true)
+			"page" => $this->load("Dashboard CBD Checker - Follow Up Payment Detail", $path, "Follow Up Payment List", "Follow Up Payment Detail"),
+			"content" =>$this->load->view('dashboardCBD/checker/follow-up-payment-detail', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}

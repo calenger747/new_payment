@@ -195,10 +195,10 @@ class New_Export extends CI_Controller {
 	{
 		$tipe = 'Reimbursement';
 		$dirPath  = BASEPATH."../app-assets/template/CPV_REIMBURSEMENT.xlsx";
-		$dataLaporan = $this->case->laporan_cpv_reimbursement_2($cpv_id);
-		$totalAmount = $this->case->cover_cpv_reimbursement_2($cpv_id);
+		$dataLaporan = $this->new_case->laporan_cpv_reimbursement_2($cpv_id);
+		$totalAmount = $this->new_case->cover_cpv_reimbursement_2($cpv_id);
 
-		$caseCover = $this->case->case_cover_reimbursement_2($cpv_id);
+		$caseCover = $this->new_case->case_cover_reimbursement_2($cpv_id);
 		$totalCover = $this->case->total_cover($caseCover->keyword);
 
 		$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($dirPath);
@@ -407,13 +407,13 @@ class New_Export extends CI_Controller {
 		];
 
 		$sheet->setCellValue('A1', preg_replace('/[^0-9.]/', '',$totalAmount->acc_number));
-		$sheet->setCellValue('B1', $totalAmount->client_name);
+		$sheet->setCellValue('B1', 'PT. AA International Indonesia');
 		$sheet->setCellValue('C1', 'IDR');
 		$sheet->setCellValue('D1', $totalCover->cover);
-		$sheet->setCellValue('E1', 'Test Transfer IH');
+		$sheet->setCellValue('E1', 'Transfer IH '.$totalAmount->abbreviation_name);
 		$sheet->setCellValue('F1', count($dataLaporan));
 		$sheet->setCellValue('G1', date("Ymd"));
-		$sheet->setCellValue('H1', '');
+		$sheet->setCellValue('H1', 'finance@acrossasiaassist.co.id');
 
 		$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleText);
 		$spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleText);
@@ -434,7 +434,7 @@ class New_Export extends CI_Controller {
 			$sheet->setCellValue('B'.$tableIndex, $dataLaporan[$i]->acc_name);
 			$sheet->setCellValue('C'.$tableIndex, 'IDR');
 			$sheet->setCellValue('D'.$tableIndex, $Cover->cover);
-			$sheet->setCellValue('E'.$tableIndex, 'Test Transfer IH'.$no);
+			$sheet->setCellValue('E'.$tableIndex, $dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id);
 			$sheet->setCellValue('F'.$tableIndex, '');
 
 			$spreadsheet->getActiveSheet()->getStyle('A'.$tableIndex)->applyFromArray($styleText);
@@ -494,13 +494,13 @@ class New_Export extends CI_Controller {
 		];
 
 		$sheet->setCellValue('A1', preg_replace('/[^0-9.]/', '',$totalAmount->acc_number));
-		$sheet->setCellValue('B1', $totalAmount->client_name);
+		$sheet->setCellValue('B1', 'PT. AA International Indonesia');
 		$sheet->setCellValue('C1', 'IDR');
 		$sheet->setCellValue('D1', $totalCover->cover);
-		$sheet->setCellValue('E1', 'Test Transfer SKN');
+		$sheet->setCellValue('E1', 'Transfer SKN '.$totalAmount->abbreviation_name);
 		$sheet->setCellValue('F1', count($dataLaporan));
 		$sheet->setCellValue('G1', date("Ymd"));
-		$sheet->setCellValue('H1', '');
+		$sheet->setCellValue('H1', 'finance@acrossasiaassist.co.id');
 
 		$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleText);
 		$spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleText);
@@ -523,7 +523,7 @@ class New_Export extends CI_Controller {
 			$sheet->setCellValue('B'.$tableIndex, $dataLaporan[$i]->acc_name);
 			$sheet->setCellValue('C'.$tableIndex, 'IDR');
 			$sheet->setCellValue('D'.$tableIndex, $Cover->cover);
-			$sheet->setCellValue('E'.$tableIndex, 'Test Transfer SKN'.$no);
+			$sheet->setCellValue('E'.$tableIndex, $dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id);
 			$sheet->setCellValue('F'.$tableIndex, $dataLaporan[$i]->bank);
 			$sheet->setCellValue('G'.$tableIndex, 'Y');
 			$sheet->setCellValue('H'.$tableIndex, 'Y');
@@ -589,13 +589,13 @@ class New_Export extends CI_Controller {
 		];
 
 		$sheet->setCellValue('A1', preg_replace('/[^0-9.]/', '',$totalAmount->acc_number));
-		$sheet->setCellValue('B1', $totalAmount->client_name);
+		$sheet->setCellValue('B1', 'PT. AA International Indonesia');
 		$sheet->setCellValue('C1', 'IDR');
 		$sheet->setCellValue('D1', $totalCover->cover);
-		$sheet->setCellValue('E1', 'Test Transfer SKN');
+		$sheet->setCellValue('E1', 'Transfer SKN '.$totalAmount->abbreviation_name);
 		$sheet->setCellValue('F1', count($dataLaporan));
 		$sheet->setCellValue('G1', date("Ymd"));
-		$sheet->setCellValue('H1', '');
+		$sheet->setCellValue('H1', 'finance@acrossasiaassist.co.id');
 
 		$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleText);
 		$spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleText);
@@ -618,7 +618,7 @@ class New_Export extends CI_Controller {
 			$sheet->setCellValue('B'.$tableIndex, $dataLaporan[$i]->acc_name);
 			$sheet->setCellValue('C'.$tableIndex, 'IDR');
 			$sheet->setCellValue('D'.$tableIndex, $Cover->cover);
-			$sheet->setCellValue('E'.$tableIndex, 'Test Transfer SKN'.$no);
+			$sheet->setCellValue('E'.$tableIndex, $dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id);
 			$sheet->setCellValue('F'.$tableIndex, $dataLaporan[$i]->bank);
 			$sheet->setCellValue('G'.$tableIndex, 'Y');
 			$sheet->setCellValue('H'.$tableIndex, 'Y');
@@ -699,13 +699,13 @@ class New_Export extends CI_Controller {
 
 		$sheet->setCellValue('A1', 
 			preg_replace('/[^0-9.]/', '',$totalAmount->acc_number).','.
-			$totalAmount->client_name.','.
+			'PT. AA International Indonesia'.','.
 			'IDR'.','.
 			$totalCover->cover.','.
-			'Test Transfer IH'.','.
+			'Transfer IH '.$totalAmount->abbreviation_name.','.
 			count($dataLaporan).','.
 			date("Ymd").','.
-			'');
+			'finance@acrossasiaassist.co.id');
 
 		$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleText);
 
@@ -718,11 +718,11 @@ class New_Export extends CI_Controller {
 			$tableIndex++;
 			$no++;
 			$sheet->setCellValue('A'.$tableIndex, 
-				preg_replace('/[^0-9.]/', '',$totalAmount->acc_number).','.
+				preg_replace('/[^0-9.]/', '',$dataLaporan[$i]->acc_number).','.
 				$dataLaporan[$i]->acc_name.','.
 				'IDR'.','.
 				$Cover->cover.','.
-				'Test Transfer IH'.$no.','.
+				$dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id.','.
 				'');
 
 			$spreadsheet->getActiveSheet()->getStyle('A'.$tableIndex)->applyFromArray($styleText);
@@ -778,13 +778,13 @@ class New_Export extends CI_Controller {
 
 		$sheet->setCellValue('A1', 
 			preg_replace('/[^0-9.]/', '',$totalAmount->acc_number).','.
-			$totalAmount->client_name.','.
+			'PT. AA International Indonesia'.','.
 			'IDR'.','.
 			$totalCover->cover.','.
-			'Test Transfer IH'.','.
+			'Transfer IH '.$totalAmount->abbreviation_name.','.
 			count($dataLaporan).','.
 			date("Ymd").','.
-			'');
+			'finance@acrossasiaassist.co.id');
 
 		$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleText);
 
@@ -797,11 +797,11 @@ class New_Export extends CI_Controller {
 			$tableIndex++;
 			$no++;
 			$sheet->setCellValue('A'.$tableIndex, 
-				preg_replace('/[^0-9.]/', '',$totalAmount->acc_number).','.
+				preg_replace('/[^0-9.]/', '',$dataLaporan[$i]->acc_number).','.
 				$dataLaporan[$i]->acc_name.','.
 				'IDR'.','.
 				$Cover->cover.','.
-				'Test Transfer SKN'.$no.','.
+				$dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id.','.
 				$dataLaporan[$i]->bank.','.
 				'Y'.','.
 				'Y'.','.
@@ -861,13 +861,13 @@ class New_Export extends CI_Controller {
 
 		$sheet->setCellValue('A1', 
 			preg_replace('/[^0-9.]/', '',$totalAmount->acc_number).','.
-			$totalAmount->client_name.','.
+			'PT. AA International Indonesia'.','.
 			'IDR'.','.
 			$totalCover->cover.','.
-			'Test Transfer IH'.','.
+			'Transfer SKN '.$totalAmount->abbreviation_name.','.
 			count($dataLaporan).','.
 			date("Ymd").','.
-			'');
+			'finance@acrossasiaassist.co.id');
 
 		$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleText);
 
@@ -880,11 +880,11 @@ class New_Export extends CI_Controller {
 			$tableIndex++;
 			$no++;
 			$sheet->setCellValue('A'.$tableIndex, 
-				preg_replace('/[^0-9.]/', '',$totalAmount->acc_number).','.
+				preg_replace('/[^0-9.]/', '',$dataLaporan[$i]->acc_number).','.
 				$dataLaporan[$i]->acc_name.','.
 				'IDR'.','.
 				$Cover->cover.','.
-				'Test Transfer SKN'.$no.','.
+				$dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id.','.
 				$dataLaporan[$i]->bank.','.
 				'Y'.','.
 				'Y'.','.
@@ -903,6 +903,127 @@ class New_Export extends CI_Controller {
 			$user = $this->session->userdata('username');
 			$data2 = array(
 				'log_detail' 	=> 'Export Bulk Payment SKN CSV By (cpv_id = '.$cpv_id.')',
+				'type_log' 		=> 'Export File',
+				'username'		=> $user,
+			);
+			$this->db->insert('log_activity_pg', $data2);
+		}
+	}
+
+	public function FuP_Excel($fup_id)
+	{
+		$cover_fup = $this->new_case->fup_cover($fup_id);
+		$content_fup = $this->new_case->fup_content($fup_id);
+
+		if ($cover_fup->case_type == '1') {
+			$tipe = 'Reimbursement';
+		} elseif ($cover_fup->case_type == '2') {
+			$tipe = 'Cashless';
+		}
+		$client_name = $cover_fup->client_name;
+		$fup_number = $cover_fup->fup_number;
+
+		$dirPath  = BASEPATH."../app-assets/template/template.xlsx";
+		$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($dirPath);
+
+		$sheet = $spreadsheet->getActiveSheet();
+		$styleText = [
+			'font' => [
+				'bold' => false,
+			],
+			'alignment' => [
+				'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT,
+			],
+			'borders' => [
+				'top' => [
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+				],
+				'left' => [
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+				],
+				'right' => [
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+				],
+				'bottom' => [
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+				],
+			],
+		];
+
+		$styleNumber = [
+			'font' => [
+				'bold' => false,
+			],
+			'alignment' => [
+				'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT,
+			],
+			'borders' => [
+				'top' => [
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+				],
+				'left' => [
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+				],
+				'right' => [
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+				],
+				'bottom' => [
+					'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+				],
+			],
+		];
+		$tableIndex = 1;
+		for ($i=0; $i < count($content_fup) ; $i++) { 
+			if ($content_fup[$i]->case_type == '1') {
+				$type = 'Reimbursement';
+			} else {
+				$type = 'Cashless';
+			}
+
+			if ($content_fup[$i]->id_provider == '310') {
+				$provider = $content_fup[$i]->provider_name." (".$content_fup[$i]->other_provider.")";
+			} else {
+				$provider = $content_fup[$i]->provider_name;
+			}
+
+			$tableIndex++;
+			$sheet->setCellValue('A'.$tableIndex, $content_fup[$i]->case_id);
+			$sheet->setCellValue('B'.$tableIndex, $type);
+			$sheet->setCellValue('C'.$tableIndex, $content_fup[$i]->patient);
+			$sheet->setCellValue('D'.$tableIndex, $content_fup[$i]->client_name);
+			$sheet->setCellValue('E'.$tableIndex, $content_fup[$i]->policy_no);
+			$sheet->setCellValue('F'.$tableIndex, $provider);
+			$sheet->setCellValue('G'.$tableIndex, $content_fup[$i]->bill_no);
+			$sheet->setCellValue('H'.$tableIndex, $content_fup[$i]->payment_date);
+			$sheet->setCellValue('I'.$tableIndex, $content_fup[$i]->doc_send_back_to_client_date);
+			$sheet->setCellValue('J'.$tableIndex, $content_fup[$i]->total_cover);
+			$sheet->setCellValue('K'.$tableIndex, '');
+
+			$spreadsheet->getActiveSheet()->getStyle('A'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('B'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('C'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('D'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('E'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('F'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('G'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('H'.$tableIndex)->applyFromArray($styleNumber);
+			$spreadsheet->getActiveSheet()->getStyle('I'.$tableIndex)->applyFromArray($styleNumber);
+			$spreadsheet->getActiveSheet()->getStyle('J'.$tableIndex)->applyFromArray($styleNumber);
+			$spreadsheet->getActiveSheet()->getStyle('K'.$tableIndex)->applyFromArray($styleNumber);
+
+
+		}
+
+		$writer = new Xlsx($spreadsheet);
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment; filename="'.$fup_number.' - '.$client_name.' - '.$tipe.'.xlsx"');
+		$save = $writer->save("php://output");
+
+		if ($save == TRUE) {
+
+			$user = $this->session->userdata('username');
+			$data2 = array(
+				'log_detail' 	=> 'Download Follow Up Payment (fup_id = '.$fup_id.')',
 				'type_log' 		=> 'Export File',
 				'username'		=> $user,
 			);

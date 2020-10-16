@@ -1,0 +1,16 @@
+1. CBD Batcher
+	- halaman case_data (index)
+	- halaman initial_batching
+	- halaman fup
+2. CBD Checker
+	- halaman batching_case (index)
+	- halaman fup
+3. Payment Admin
+	- halaman case_data (index)
+	- halaman initial_batching
+	- halaman batching_case
+	- halaman payment_case
+	- halaman cpv
+4. Payment Checker
+	- halaman batching_case (index)
+	- halaman cpv

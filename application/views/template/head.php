@@ -12,6 +12,10 @@
     <link href="<?= base_url(); ?>app-assets/plugins/icheck/skins/all.css" rel="stylesheet">
     <!-- toast CSS -->
     <link href="<?= base_url(); ?>app-assets/plugins/toast-master/css/jquery.toast.css" rel="stylesheet">
+    <!-- Select 2 -->
+    <link href="<?= base_url(); ?>app-assets/plugins/select2/dist/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <!-- Date picker plugins css -->
+    <link href="<?= base_url(); ?>app-assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.css" rel="stylesheet" type="text/css" />
     <!-- morris CSS -->
     <link href="<?= base_url(); ?>app-assets/plugins/morrisjs/morris.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -27,3 +31,6 @@
     <!-- toast JS -->
     <script src="<?= base_url(); ?>app-assets/plugins/toast-master/js/jquery.toast.js"></script>
     <script src="<?= base_url(); ?>app-assets/js/toastr.js"></script>
+    <!-- Select2 -->
+    <script src="<?= base_url(); ?>app-assets/plugins/select2/dist/js/select2.full.min.js" type="text/javascript"></script>
+    <script src="<?= base_url(); ?>app-assets/plugins/bootstrap-select/bootstrap-select.min.js" type="text/javascript"></script>

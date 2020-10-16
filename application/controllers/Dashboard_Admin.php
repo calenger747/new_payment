@@ -123,6 +123,21 @@ class Dashboard_Admin extends CI_Controller {
 		$this->load->view('template/default_template', $data);
 	}
 
+	public function initial_batching()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Initial Batching", $path, "Batching Case", "Initial Batching"),
+			"content" =>$this->load->view('dashboardAdmin/initial-batching', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
 	public function batching_case()
 	{
 		$css = "";
@@ -257,6 +272,35 @@ class Dashboard_Admin extends CI_Controller {
 		$data = array(
 			"page" => $this->load("Dashboard Admin - History Batching", $path, "History Batching", ""),
 			"content" =>$this->load->view('dashboardAdmin/history-batching', false, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	// Follow Up Payment
+	public function follow_up_payment()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Follow Up Payment List", $path, "Follow Up Payment List", ""),
+			"content" =>$this->load->view('dashboardAdmin/follow-up-payment', false, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	// Follow Up Payment Detail
+	public function new_fup_detail($fup_id)
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'fup_detail' => $this->new_case->fup_detail($fup_id), 
+		);
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Follow Up Payment Detail", $path, "Follow Up Payment List", "Follow Up Payment Detail"),
+			"content" =>$this->load->view('dashboardAdmin/follow-up-payment-detail', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}

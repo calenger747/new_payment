@@ -124,23 +124,23 @@ class Login extends CI_Controller {
 				if ($data->userlevel_01 == '-1') {
 					$this->session->set_userdata($newdata);
 					$this->session->set_flashdata('notif','Welcome '.$data->full_name.' to the Payment Gateway System for Healtcare.');
-					redirect("Dashboard_Admin");
+					redirect("Dashboard_Admin/case_data");
 				} else if ($data->userlevel_01 == '91') {
 					$this->session->set_userdata($newdata);
 					$this->session->set_flashdata('notif','Welcome '.$data->full_name.' to the Payment Gateway System for Healtcare.');
-					redirect("Dashboard_CBD_Batcher");
+					redirect("Dashboard_CBD_Batcher/case_data");
 				} elseif ($data->userlevel_01 == '92') {
 					$this->session->set_userdata($newdata);
 					$this->session->set_flashdata('notif','Welcome '.$data->full_name.' to the Payment Gateway System for Healtcare.');
-					redirect("Dashboard_CBD_Checker");
+					redirect("Dashboard_CBD_Checker/batching_case");
 				} elseif ($data->userlevel_01 == '93') {
 					$this->session->set_userdata($newdata);
 					$this->session->set_flashdata('notif','Welcome '.$data->full_name.' to the Payment Gateway System for Healtcare.');
-					redirect("Dashboard_Payment_Admin");
+					redirect("Dashboard_Payment_Admin/case_data");
 				} elseif ($data->userlevel_01 == '94') {
 					$this->session->set_userdata($newdata);
 					$this->session->set_flashdata('notif','Welcome '.$data->full_name.' to the Payment Gateway System for Healtcare.');
-					redirect("Dashboard_Payment_Checker");
+					redirect("Dashboard_Payment_Checker/batching_case");
 				} else {
 					$this->session->set_flashdata("notif", "Sorry, You Don't Have An Access To This System!");
 					redirect('Login');

@@ -6,9 +6,9 @@
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
             <ul id="sidebarnav">
-                <li class="nav-small-cap">PERSONAL</li>
+                <!-- <li class="nav-small-cap">PERSONAL</li>
                 <li> <a class="<?php if($this->uri->segment(1) == 'Dashboard_Payment_Checker' && $this->uri->segment(2) == ''){echo'active';} ?>active" href="<?= base_url(); ?>Dashboard_Payment_Checker" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard </a>
-                </li>
+                </li> -->
                 <!-- <li class="nav-small-cap">OBV CASE</li>
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-table"></i><span class="hide-menu">OBV Case</span></a>
                     <ul aria-expanded="false" class="collapse">

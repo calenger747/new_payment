@@ -17,21 +17,26 @@
       <div class="col-md-6">
         <div class="form-group">
           <label>Case Status</label>
-          <select id="case_status" class="form-control">
-            <option value="" hidden="">-- Select Status --</option>
-            <?php foreach ($data_status as $row) { ?>
-              <option value="<?= $row->status; ?>"><?= $row->name; ?></option>
-            <?php } ?>
+          <select id="case_status" class="select2 form-control select2-multiple" style="width: 100%!important;" multiple="" data-placeholder=" -- Select Status --">
           </select>
+          <input type="hidden" name="" id="status" readonly="">
         </div>
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-6">
         <div class="form-group">
           <label>Client</label>
           <select id="client" name="client_name" class="form-control" required="">
             <option value="">-- Select Client --</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>OB Checking Date</label>
+          <select id="ob_checking" name="ob_checking" class="form-control" required="">
+            <option value="">-- Select Date --</option>
           </select>
         </div>
       </div>
@@ -43,7 +48,7 @@
     <div class="row">
       <div class="col-md-8">
         <div class="card-title">
-          <h4 class="mdi mdi-filter"> Case Data</h4>  
+          <h4 class="mdi mdi-book-open-variant"> Case Data</h4>  
         </div>
       </div>
       <div class="col-md-4">
@@ -99,7 +104,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="formChange" action="<?php echo base_url(); ?>/Process_Status/Import_Batching" method="POST" autocomplete="off" enctype="multipart/form-data">
+      <form id="formChange" action="<?php echo base_url(); ?>Process_Status/Import_Batching" method="POST" autocomplete="off" enctype="multipart/form-data">
         <div class="modal-body">
           <div class="form-group">
             <a href="<?= base_url(); ?>app-assets/template/template_batching.xlsx" target="_blank" download>
@@ -144,10 +149,11 @@
       "ajax":{
         "url" :  base + 'New_DataTables/Case_Data',
         "type" : 'POST',
-        "data": function (data) {
-          data.tipe = $('#type').val();
-          data.status = $('#case_status').val();
-          data.client = $('#client').val();
+        "data": {
+          tipe: function() { return $('#type').val() },
+          status: function() { return $('#status').val() },
+          client: function() { return $('#client').val() },
+          ob_checking: function() { return $('#ob_checking').val() },
         },
         "datatype": 'json',
       },
@@ -184,15 +190,33 @@
       },
     });
 
+    $("#case_status").select2();
+
     $('#type').change(function(){
-      var type = $(this).val();
-      var case_status = $("#case_status").val();
+      var case_type = $(this).val();
+      var selMulti = $.map($("#case_status option:selected"), function (el, i) {
+        return $(el).val();
+      });
+      $("#status").val(selMulti.join("','"));
+
+      var case_status = selMulti.join("','");
+
+      $.ajax({
+        url:"<?php echo base_url(); ?>Validated/get_status",
+        method:"POST",
+        data:{
+          case_type:case_type, 
+        },
+        success:function(data) {
+          $('#case_status').html(data);
+        }
+      });
 
       $.ajax({
         url:"<?php echo base_url(); ?>Validated/new_get_client",
         method:"POST",
         data:{
-          type:type, 
+          case_type:case_type, 
           case_status:case_status,
         },
         success:function(data) {
@@ -200,17 +224,37 @@
         }
       });
       table.ajax.reload();
+
+      $('#client').html('<option value="" selected>-- Select Client --</option>');
+      $('#ob_checking').html('<option value="" selected>-- Select Date --</option>');
     });
 
     $('#client').show(function(){
-      var type = $('#type').val();
-      var case_status = $("#case_status").val();
+      var case_type = $('#type').val();
 
+      var selMulti = $.map($("#case_status option:selected"), function (el, i) {
+        return $(el).val();
+      });
+      $("#status").val(selMulti.join("','"));
+
+      var case_status = selMulti.join("','");
+
+      $.ajax({
+        url:"<?php echo base_url(); ?>Validated/get_status",
+        method:"POST",
+        data:{
+          case_type:case_type, 
+        },
+        success:function(data) {
+          $('#case_status').html(data);
+        }
+      });
+      
       $.ajax({
         url:"<?php echo base_url(); ?>Validated/new_get_client",
         method:"POST",
         data:{
-          type:type, 
+          case_type:case_type, 
           case_status:case_status,
         },
         success:function(data) {
@@ -221,24 +265,61 @@
     });
 
     $('#case_status').change(function(){
-      var type = $('#type').val();
-      var case_status = $(this).val();
+      var case_type = $('#type').val();
+      var selMulti = $.map($("#case_status option:selected"), function (el, i) {
+        return $(el).val();
+      });
+      $("#status").val(selMulti.join("','"));
+
+      var case_status = selMulti.join("','");
+      $('#client').html('<option value="" selected>-- Select Client --</option>');
 
       $.ajax({
         url:"<?php echo base_url(); ?>Validated/new_get_client",
         method:"POST",
         data:{
-          type:type, 
+          case_type:case_type, 
           case_status:case_status,
         },
         success:function(data) {
           $('#client').html(data);
         }
       });
+
       table.ajax.reload();
+
+      $('#ob_checking').html('<option value="" selected>-- Select Date --</option>');
     });
 
     $('#client').change(function(){
+      var case_type = $('#type').val();
+      var selMulti = $.map($("#case_status option:selected"), function (el, i) {
+        return $(el).val();
+      });
+      $("#status").val(selMulti.join("','"));
+
+      var case_status = selMulti.join("','");
+      var client = $('#client').val();
+      if (client == '') {
+        $('#ob_checking').html('<option value="" selected>-- Select Date --</option>');
+      } else {
+        $.ajax({
+          url:"<?php echo base_url(); ?>Validated/get_ob_checking_date",
+          method:"POST",
+          data:{
+            case_type:case_type, 
+            case_status:case_status,
+            client:client,
+          },
+          success:function(data) {
+            $('#ob_checking').html(data);
+          }
+        });
+      }
+      table.ajax.reload();
+    });
+
+    $('#ob_checking').change(function(){
       table.ajax.reload();
     });
 
@@ -246,7 +327,7 @@
       if (this.files && this.files[0] && this.files[0].name.match(/\.(xlsx)$/) ) {
         if(this.files[0].size>10485760) {
           $('.dokumen').val('');
-          alert('Batas Maximal Ukuran File 10MB !');
+          alert('Maximum Files Size 10MB !');
         }
         else {
           var reader = new FileReader();
@@ -254,7 +335,7 @@
         }
       } else{
         $('.dokumen').val('');
-        alert('Hanya File Xlsx Yang Diizinkan !');
+        alert('Only xlsx Files Are Allowed !');
       }
     });
 
@@ -291,16 +372,16 @@
         });
         swal({
           title: "Batching Case ?",
-          text: 'Enter Note (do not use the "/" symbol)',
+          text: 'Enter Note',
           content: "input",
-          inputPlaceholder: "Enter Note (do not use the '/' symbol)",
+          // inputPlaceholder: "Enter Note",
           icon: "warning",
           buttons: true,
           dangerMode: true,
         }).then((result) => {
           if (result) {
             $.ajax({
-              url:"<?php echo base_url(); ?>Process_Status/Batching_Case/" + `${result}` + "/" + `${case_type}`,
+              url:"<?php echo base_url(); ?>Process_Status/Batching_Case?note=" + `${result}` + "&case_type=" + `${case_type}`,
               method:"POST",
               data:{
                 checkbox_value:checkbox_value,
@@ -308,7 +389,7 @@
               beforeSend :function() {
                 swal({
                   title: 'Please Wait',
-                  html: 'Batching data',
+                  text: 'Batching data',
                   onOpen: () => {
                     swal.showLoading()
                   }

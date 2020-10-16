@@ -1,5 +1,5 @@
     <!-- Bootstrap tether Core JavaScript -->
-    <script src="<?= base_url(); ?>app-assets/plugins/bootstrap/js/popper.min.html"></script>
+    <script src="<?= base_url(); ?>app-assets/plugins/popper/popper.min.js"></script>
     <script src="<?= base_url(); ?>app-assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <!-- slimscrollbar scrollbar JavaScript -->
     <script src="<?= base_url(); ?>app-assets/js/jquery.slimscroll.js"></script>
@@ -20,6 +20,27 @@
     <script src="<?= base_url(); ?>app-assets/plugins/icheck/icheck.min.js"></script>
     <script src="<?= base_url(); ?>app-assets/plugins/icheck/icheck.init.js"></script>
     <!-- ============================================================== -->
+    <!-- Date Picker Plugin JavaScript -->
+    <script src="<?= base_url(); ?>app-assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
     <!-- Style switcher -->
     <!-- ============================================================== -->
     <script src="<?= base_url(); ?>app-assets/plugins/styleswitcher/jQuery.style.switcher.js"></script>
+    <!-- <script>
+        document.onkeydown = function(e) {
+            if (e.ctrlKey && (e.keyCode === 85)) {
+                return false;
+            } else {
+                return true;
+            }
+        };
+        $(document).keypress("u",function(e) {
+            if(e.ctrlKey)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        });
+    </script> -->

@@ -64,6 +64,64 @@ class New_Datatables extends CI_Controller {
 			"data" => $data,
 			"type" => $tipe,
 			"client" => $client,
+			"status" => $status,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Initial Case Batching
+	public function Initial_Batching()
+	{
+		$tipe = $this->input->post('tipe');
+		$status = $this->input->post('status');
+		$client = $this->input->post('client');
+		$list = $this->new_case->datatable_initial_batching();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $case) {
+			$no++;
+
+			if ($case->type == '1') {
+				$type = 'Reimbursement';
+			} else if ($case->type == '2') {
+				$type = 'Cashless';
+			} else if ($case->type == '3') {
+				$type = 'Non-LOG';
+			}
+			$data[] = array(
+				'button' 			=> '<center>
+				<div class="custom-control custom-checkbox text-center">
+				<input type="checkbox" class="custom-control-input check" value="'.$case->case_id.'" name="case_id[]" id="custom'.$case->case_id.'">
+				<label class="custom-control-label" for="custom'.$case->case_id.'"></label>
+				</div>
+				</center>',
+				"case_id" 			=> htmlspecialchars_decode(htmlentities($case->case_id)),
+				"status_case" 		=> htmlspecialchars_decode(htmlentities($case->status_case)),
+				"case_ref" 			=> htmlspecialchars_decode(htmlentities($case->case_ref)),
+				"receive_date" 		=> htmlspecialchars_decode(htmlentities(date('d/m/Y H:i:s', strtotime($case->receive_date)))),
+				"category_case" 	=> htmlspecialchars_decode(htmlentities($case->category_case)),
+				"type" 				=> htmlspecialchars_decode(htmlentities($type)),
+				"client" 			=> htmlspecialchars_decode(htmlentities($case->client)),
+				"member" 			=> htmlspecialchars_decode(htmlentities($case->member)).', '.htmlspecialchars_decode(htmlentities(date('d/m/Y', strtotime($case->tgl_lahir)))).', '.htmlspecialchars_decode(htmlentities($case->policy_no)).', '.htmlspecialchars_decode(htmlentities($case->abbreviation_name)).' - '.htmlspecialchars_decode(htmlentities($case->plan_name)),
+				"member_id" 		=> htmlspecialchars_decode(htmlentities($case->member_id)),
+				"member_card" 		=> htmlspecialchars_decode(htmlentities($case->member_card)),
+				"policy_no" 		=> htmlspecialchars_decode(htmlentities($case->policy_no)),
+				"provider" 			=> htmlspecialchars_decode(htmlentities($case->provider)),
+				"other_provider" 	=> htmlspecialchars_decode(htmlentities($case->other_provider)),
+				"admission_date" 	=> htmlspecialchars_decode(htmlentities(date('d/m/Y', strtotime($case->admission_date)))),
+				"discharge_date" 	=> htmlspecialchars_decode(htmlentities(date('d/m/Y H:i:s', strtotime($case->discharge_date)))),
+				"account_no" 	=> htmlspecialchars_decode(htmlentities($case->account_no_client)),
+			);
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->new_case->initial_batching_all(),
+			"recordsFiltered" => $this->new_case->initial_batching_filtered(),
+			"data" => $data,
+			"type" => $tipe,
+			"client" => $client,
 		);
         //output to json format
 		echo json_encode($output);
@@ -91,7 +149,7 @@ class New_Datatables extends CI_Controller {
 			$data[] = array(
 				'button' 			=> '<center>
 				<div class="custom-control custom-checkbox text-center">
-				<input type="checkbox" class="custom-control-input check" value="'.$case->case_id.'" name="customCheck" id="custom'.$case->case_id.'">
+				<input type="checkbox" class="custom-control-input check" value="'.$case->case_id.'" name="case_id[]" id="custom'.$case->case_id.'">
 				<label class="custom-control-label" for="custom'.$case->case_id.'"></label>
 				</div>
 				</center>',
@@ -201,6 +259,8 @@ class New_Datatables extends CI_Controller {
 		foreach ($list as $case) {
 			$no++;
 
+			$count = $this->new_case->record_cpv($case->cpv_id);
+
 			if ($case->case_type == '1') {
 				$type = 'Reimbursement';
 			} else if ($case->case_type == '2') {
@@ -237,7 +297,7 @@ class New_Datatables extends CI_Controller {
 				"client" 			=> htmlspecialchars_decode(htmlentities($case->client_name)),
 				"source_account"	=> htmlspecialchars_decode(htmlentities($case->bank)).' - '.htmlspecialchars_decode(htmlentities(preg_replace('/[^0-9.]/', '',$case->account_no))),
 				"created_date" 		=> htmlspecialchars_decode(htmlentities(date('d/m/Y H:i:s', strtotime($case->created_date)))),
-				"total_record" 		=> '<p class="text-right">'.htmlspecialchars_decode(htmlentities($case->total_record)).'</p>',
+				"total_record" 		=> '<p class="text-right">'.htmlspecialchars_decode(htmlentities($count->record)).'</p>',
 				"total_cover" 		=> '<p class="text-right">Rp '.htmlspecialchars_decode(htmlentities(number_format($case->total_cover,2,',','.'))).'</p>',
 			);
 		}
@@ -376,6 +436,111 @@ class New_Datatables extends CI_Controller {
 			"recordsFiltered" => $this->new_case->cpv_reimbursement_filtered(),
 			"data" => $data,
 			"cpv_id" => $cpv_id,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// FuP List
+	public function FuP_List()
+	{
+		if ($this->session->userdata('level_user') == '-1') {
+			$user = 'Dashboard_Admin';
+		} else if ($this->session->userdata('level_user') == '93') {
+			$user = 'Dashboard_Payment_Admin';
+		} else if ($this->session->userdata('level_user') == '94') {
+			$user = 'Dashboard_Payment_Checker';
+		} else if ($this->session->userdata('level_user') == '92') {
+			$user = 'Dashboard_CBD_Checker';
+		} else if ($this->session->userdata('level_user') == '91') {
+			$user = 'Dashboard_CBD_Batcher';
+		}
+		$list = $this->new_case->datatable_fup_list();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $case) {
+			$no++;
+			
+			$data[] = array(
+				'button' 			=> '<center>'.
+				'<a href="'.base_url().$user.'/new_fup_detail/'.$case->fup_id.'" class="detail" title="Show Detail FuP">
+				<button class="btn btn-sm btn-primary"><i class="mdi mdi-view-list"></i></button>
+				</a>
+				</center>',
+
+				"fup_number"		=> htmlspecialchars_decode(htmlentities($case->fup_number)),
+				"client" 			=> htmlspecialchars_decode(htmlentities($case->client_name)),
+				"created_date" 		=> htmlspecialchars_decode(htmlentities(date('d/m/Y H:i:s', strtotime($case->created_date)))),
+				"total_record" 		=> '<p class="text-right">'.htmlspecialchars_decode(htmlentities($case->total_record)).'</p>',
+				"total_cover" 		=> '<p class="text-right">Rp '.htmlspecialchars_decode(htmlentities(number_format($case->total_cover,2,',','.'))).'</p>',
+			);
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->new_case->fup_list_all(),
+			"recordsFiltered" => $this->new_case->fup_list_filtered(),
+			"data" => $data,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Detail Follow Up Payment
+	public function FuP_Detail()
+	{
+		$fup_id = $this->input->post("fup_id");
+		$list = $this->new_case->datatable_fup_detail();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $case) {
+			$no++;
+
+			if ($case->case_type == '1') {
+				$type = 'Reimbursement';
+			} else if ($case->case_type == '2') {
+				$type = 'Cashless';
+			}
+
+			if ($case->id_provider == '310') {
+				$provider = $case->provider_name." (".$case->other_provider.")";
+			} else {
+				$provider = $case->provider_name;
+			}
+
+			if ($case->payment_date == '' || $case->payment_date == NULL) {
+				$payment_date = '';
+			} else {
+				$payment_date = date('d/m/Y H:i:s', strtotime($case->payment_date));
+			}
+
+			if ($case->doc_send_back_to_client_date == '' || $case->doc_send_back_to_client_date == NULL) {
+				$doc_send_back_to_client_date = '';
+			} else {
+				$doc_send_back_to_client_date = date('d/m/Y H:i:s', strtotime($case->doc_send_back_to_client_date));
+			}
+			$Cover = $this->case->total_cover($case->case_id);
+			$data[] = array(
+				"no" 				=> htmlspecialchars_decode(htmlentities($no)),
+				"case_id" 			=> htmlspecialchars_decode(htmlentities($case->case_id)),
+				"case_type"			=> htmlspecialchars_decode(htmlentities($type)),
+				"patient"	 		=> htmlspecialchars_decode(htmlentities($case->patient)),
+				"client"	 		=> htmlspecialchars_decode(htmlentities($case->client_name)),
+				"policy_no"	 		=> htmlspecialchars_decode(htmlentities($case->policy_no)),
+				"provider" 			=> htmlspecialchars_decode(htmlentities($provider)),
+				"bill_no" 			=> htmlspecialchars_decode(htmlentities($case->bill_no)),
+				"payment_date" 		=> htmlspecialchars_decode(htmlentities($payment_date)),
+				"doc_send_date" 	=> htmlspecialchars_decode(htmlentities($doc_send_back_to_client_date)),
+				"cover_amount" 		=> '<p class="text-right">Rp '.htmlspecialchars_decode(htmlentities(number_format($case->total_cover,2,',','.'))).'</p>',
+			);
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->new_case->fup_detail_all(),
+			"recordsFiltered" => $this->new_case->fup_detail_filtered(),
+			"data" => $data,
+			"fup_id" => $fup_id,
 		);
         //output to json format
 		echo json_encode($output);
