@@ -82,7 +82,7 @@ $db['default'] = array(
 	// 'hostname' => '192.168.0.24',
 	// 'username' => 'luki.handoko',
 	// 'password' => 'MysticRiver20140310',
-	// 'database' => 'his-tpa',
+	// 'database' => 'his-tpa-dev',
 
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

@@ -122,6 +122,79 @@ class Validated extends CI_Controller {
 		echo $this->new_case->get_ob_checking_date($case_type, $case_status, $client);
 	}
 
+	// Get Plan Benefit
+	public function get_plan_benefit()
+	{
+		$case_type = $this->input->post('case_type');
+		$case_status = $this->input->post('case_status');
+		$client = $this->input->post('client');
+		$ob_checking = $this->input->post('ob_checking');
+		echo $this->new_case->get_plan_benefit($case_type, $case_status, $client, $ob_checking);
+	}
+
+	// Get Plan Benefit Initial Batching
+	public function get_plan_benefit_2()
+	{
+		$case_type = $this->input->post('case_type');
+		$case_status = $this->input->post('case_status');
+		$payment_by = $this->input->post('payment_by');
+		$tgl_batch = $this->input->post('tgl_batch');
+		$history_batch = $this->input->post('history_batch');
+		$status_batch = $this->input->post('status_batch');
+		$client = $this->input->post('client');
+		$user = '';
+		echo $this->new_case->get_plan_benefit_2($case_type, $case_status, $payment_by, $tgl_batch, $history_batch, $status_batch, $client, $user);
+	}
+
+	// Get Plan Benefit Batching
+	public function get_plan_benefit_3()
+	{
+		$case_type = $this->input->post('case_type');
+		$case_status = $this->input->post('case_status');
+		$payment_by = $this->input->post('payment_by');
+		$tgl_batch = $this->input->post('tgl_batch');
+		$history_batch = $this->input->post('history_batch');
+		$status_batch = $this->input->post('status_batch');
+		$client = $this->input->post('client');
+		$user = '';
+		echo $this->new_case->get_plan_benefit_3($case_type, $case_status, $payment_by, $tgl_batch, $history_batch, $status_batch, $client, $user);
+	}
+
+	// GET Plan Benefit Payment Bastch
+	public function get_plan_benefit_4()
+	{
+		$case_type = $this->input->post('case_type');
+		$case_status = $this->input->post('case_status');
+		$payment_by = $this->input->post('payment_by');
+		$source_bank = $this->input->post('source_bank');
+		$source_account = $this->input->post('source_account');
+		$beneficiary_bank = $this->input->post('beneficiary_bank');
+		$beneficiary_account = $this->input->post('beneficiary_account');
+		$status_batch = $this->input->post('status_batch');
+		$client = $this->input->post('client');
+		$user = '';
+
+		echo $this->new_case->get_plan_benefit_4($case_type, $case_status, $payment_by, $source_bank, $source_account, $beneficiary_bank, $beneficiary_account, $status_batch, $client, $user);
+	}
+
+	// GET OBV Remarks Payment Bastch
+	public function get_obv_remarks()
+	{
+		$case_type = $this->input->post('case_type');
+		$case_status = $this->input->post('case_status');
+		$payment_by = $this->input->post('payment_by');
+		$source_bank = $this->input->post('source_bank');
+		$source_account = $this->input->post('source_account');
+		$beneficiary_bank = $this->input->post('beneficiary_bank');
+		$beneficiary_account = $this->input->post('beneficiary_account');
+		$status_batch = $this->input->post('status_batch');
+		$client = $this->input->post('client');
+		$plan = $this->input->post('plan');
+		$user = '';
+
+		echo $this->new_case->get_obv_remarks($case_type, $case_status, $payment_by, $source_bank, $source_account, $beneficiary_bank, $beneficiary_account, $status_batch, $client, $plan, $user);
+	}
+
 	// NEW Get Client Name Batching
 	public function new_get_client_batch()
 	{
@@ -209,5 +282,31 @@ class Validated extends CI_Controller {
 		echo $this->new_case->get_beneficiary_account($case_type, $case_status, $payment_by, $source_bank, $source_account, $beneficiary_bank, $status_batch, $client, $user);
 	}
 
+	// NEW Get Client CPV
+	public function get_client_cpv()
+	{
+		$case_type = $this->input->post('case_type');
+		$user = '';
 
+		echo $this->new_case->get_client_cpv($case_type, $user);
+	}
+
+	// NEW Get Status Approve CPV
+	public function get_status_cpv()
+	{
+		$case_type = $this->input->post('case_type');
+		$client = $this->input->post('client');
+		$user = '';
+
+		echo $this->new_case->get_status_cpv($case_type, $client, $user);
+	}
+
+	// NEW Get Client FuP
+	public function get_client_fup()
+	{
+		$case_type = $this->input->post('case_type');
+		$user = '';
+
+		echo $this->new_case->get_client_fup($case_type, $user);
+	}
 }

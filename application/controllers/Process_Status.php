@@ -33,10 +33,16 @@ class Process_Status extends CI_Controller {
 
 			for($count = 0; $count < count($case_id); $count++)
 			{
+				$cek_case_close = $this->new_case->cek_case_close($case_id[$count]);
+				if ($cek_case_close->case_closed_by == '1') {
+					$status_batch = '1';
+				} else {
+					$status_batch = '11';
+				}
 				$data = array(
 					'history_id' 	=> $id_history,
 					'case_id' 		=> $case_id[$count],
-					'status_batch'	=> '11',
+					'status_batch'	=> $status_batch,
 					'username'		=> $user,
 				);
 				$query = $this->db->insert('new_history_batch_detail', $data);
@@ -94,6 +100,7 @@ class Process_Status extends CI_Controller {
 		{
 			$case_id = $this->input->post('checkbox_value');
 			$cpv_id = $this->input->get('cpv_id');
+			$case_type = $this->input->get('case_type');
 
 			for($count = 0; $count < count($case_id); $count++)
 			{
@@ -109,20 +116,25 @@ class Process_Status extends CI_Controller {
 				$this->db->where('id', $history_id);
 				$update = $this->db->update('new_history_batch_detail', $data);
 
-				// $count_cpv = $this->new_case->cpv_detail($cpv_id);
-				// $record = (int)$count_cpv->total_record;
-				// $cpv_count = count($case_id);
-				// $count_case_id = (int)$cpv_count;
+				if ($case_type == '2') {
+					$provider_bank = $this->new_case->provider_bank_2($cpv_id);
+					$bank = $provider_bank->bank;
+				} else {
+					$member_bank = $this->new_case->member_bank_2($cpv_id);
+					$bank = $member_bank->bank;
+				}
 
-				// $total_record = $record - $count_case_id;
+				$count_cpv = $this->new_case->record_cpv($cpv_id);
+				$record = $count_cpv->record;
 
-				// $cpv = array(
-				// 	'total_record'	=> (int)$total_record,
-				// 	'edited_by'		=> $user,
-				// 	'edit_date'		=> date("Y-m-d H:i:s"),
-				// );
-				// $this->db->where('id', $cpv_id);
-				// $update = $this->db->update('new_cpv_list', $cpv);
+				$cpv = array(
+					'total_record'		=> $record,
+					'beneficiary_bank' 	=> $bank,
+					'edited_by'			=> $user,
+					'edit_date'			=> date("Y-m-d H:i:s"),
+				);
+				$this->db->where('id', $cpv_id);
+				$update = $this->db->update('new_cpv_list', $cpv);
 
 				$data2 = array(
 					'log_detail' 	=> 'Re-Batching Case "'.$case_id[$count].'" (id batch = '.$history_id.')',
@@ -189,11 +201,18 @@ class Process_Status extends CI_Controller {
 					TRUE,
 					FALSE);
 
-                //Sesuaikan sama nama kolom tabel di database                                
+                //Sesuaikan sama nama kolom tabel di database
+				$cek_case_close = $this->new_case->cek_case_close($rowData[0][0]);
+				if ($cek_case_close->case_closed_by == '1') {
+					$status_batch = '1';
+				} else {
+					$status_batch = '11';
+				}
+
 				$data = array(
 					'history_id'	=> $history_id,
 					"case_id"		=> $rowData[0][0],
-					'status_batch'	=> '11',
+					'status_batch'	=> $status_batch,
 					'username' 		=> $user,
 				);
 

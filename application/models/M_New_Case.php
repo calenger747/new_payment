@@ -22,8 +22,8 @@ class M_New_Case extends CI_Model{
     var $table_2_4 = 'client';
     var $table_2_5 = 'bank';
     var $table_2_6 = 'worksheet_header';
-    var $column_order_2 = array('new_cpv_list.cpv_number','client.full_name','bank.name','client.account_no','new_cpv_list.created','new_cpv_list.total_record','worksheet_header.total_cover'); //set column field database for datatable orderable 
-    var $column_search_2 = array('new_cpv_list.cpv_number','client.full_name','bank.name','client.account_no','new_cpv_list.created','new_cpv_list.total_record','worksheet_header.total_cover'); //set column field database for datatable searchable 
+    var $column_order_2 = array('new_cpv_list.cpv_number','client.id','client.full_name','bank.name','client.account_no','new_cpv_list.created','new_cpv_list.total_record','worksheet_header.total_cover'); //set column field database for datatable orderable 
+    var $column_search_2 = array('new_cpv_list.cpv_number','client.id','client.full_name','bank.name','client.account_no','new_cpv_list.created','new_cpv_list.total_record','worksheet_header.total_cover'); //set column field database for datatable searchable 
     var $order_2 = array('new_cpv_list.id' => 'ASC'); // default order
 
     var $table_3 = 'case'; 
@@ -90,6 +90,17 @@ class M_New_Case extends CI_Model{
     	return $query;
     }
 
+    public function cek_case_close($case_id)
+    {
+        $query = $this->db->query("SELECT 
+            program.claim_paid_by AS paid_by,
+            program.close_case_option AS case_closed_by
+            FROM program
+            JOIN `case` ON (program.client = `case`.client AND `case`.program = program.id)
+            WHERE `case`.id IN ('$case_id')");
+        return $query->row();
+    }
+
     public function cek_ws_actual($case_id)
     {
     	$query = $this->db->query("SELECT 
@@ -134,6 +145,41 @@ class M_New_Case extends CI_Model{
     	return $query->row();
     }
 
+    public function member_bank_2($cpv_id)
+    {
+        $query = $this->db->query("SELECT
+            GROUP_CONCAT(
+            DISTINCT SUBSTRING_INDEX(`member`.bank, ',', 1)
+            ) AS bank
+            FROM
+            `case`
+            JOIN member ON `case`.patient = member.id
+            WHERE
+            `case`.id IN ('$cpv_id')
+            ORDER BY
+            `case`.id ASC");
+        return $query->row();
+    }
+
+    public function provider_bank_2($cpv_id)
+    {
+        $query = $this->db->query("SELECT
+            GROUP_CONCAT(
+            DISTINCT SUBSTRING_INDEX(`bank`.id, ',', 1)
+            ) AS bank
+            FROM
+            `case`
+            JOIN provider ON `case`.provider = provider.id
+            JOIN bank ON provider.bank = bank.id
+            JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+            JOIN new_cpv_list ON new_cpv_list.id = new_history_batch_detail.cpv_id
+            WHERE
+            new_cpv_list.id IN ('$cpv_id')
+            ORDER BY
+            `bank`.id ASC");
+        return $query->row();
+    }
+
     public function record_cpv($cpv_id)
     {
     	$query = $this->db->query("SELECT COUNT(case_id) AS record FROM new_history_batch_detail WHERE cpv_id ='$cpv_id' GROUP BY cpv_id");
@@ -176,6 +222,104 @@ class M_New_Case extends CI_Model{
     		JOIN bank ON client.bank = bank.id
     		WHERE new_cpv_list.id = '$cpv_id'");
     	return $query->row();
+    }
+
+    public function get_client_cpv($case_type, $user="")
+    {
+        $where = " WHERE new_cpv_list.case_type = '{$case_type}'";
+
+        if (!empty($user)) {
+            $where .= " AND new_cpv_list.username ='{$user}'";
+        }
+
+        $sql = "SELECT
+        client.id AS id,
+        client.full_name AS client_name
+        FROM
+        client
+        JOIN `case` ON `case`.client = client.id
+        JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+        JOIN new_cpv_list ON new_history_batch_detail.cpv_id = new_cpv_list.id
+        ".$where.
+        "GROUP BY client.id
+        ORDER BY client.full_name ASC";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Client --</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->id.'">'.$row->client_name.'</option>';
+        }
+        return $output;
+    }
+
+    public function get_status_cpv($case_type, $client="", $user="")
+    {
+        $where = " WHERE new_cpv_list.case_type = '{$case_type}'";
+
+        if (!empty($client)) {
+            $where .= " AND client.id ='{$client}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_cpv_list.username ='{$user}'";
+        }
+
+        $sql = "SELECT
+        new_cpv_list.approve AS status_approve
+        FROM
+        client
+        JOIN `case` ON `case`.client = client.id
+        JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+        JOIN new_cpv_list ON new_history_batch_detail.cpv_id = new_cpv_list.id
+        ".$where.
+        "GROUP BY new_cpv_list.approve
+        ORDER BY new_cpv_list.approve ASC";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Status --</option>';
+        foreach($prepared->result() as $row)
+        {
+            if ($row->status_approve == '1') {
+                $type = 'Pending Approval';
+            } else if ($row->status_approve == '2') {
+                $type = 'Release';
+            }
+            $output .= '<option value="'.$row->status_approve.'">'.$type.'</option>';
+        }
+        return $output;
+    }
+
+    public function get_client_fup($case_type, $user="")
+    {
+        $where = " WHERE send_back_list.case_type = '{$case_type}'";
+
+        if (!empty($user)) {
+            $where .= " AND send_back_list.username ='{$user}'";
+        }
+
+        $sql = "SELECT
+        client.id AS id,
+        client.full_name AS client_name
+        FROM
+        client
+        JOIN `case` ON `case`.client = client.id
+        JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+        JOIN send_back_list ON new_history_batch_detail.send_back_id = send_back_list.id
+        ".$where.
+        "GROUP BY client.id
+        ORDER BY client.full_name ASC";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Client --</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->id.'">'.$row->client_name.'</option>';
+        }
+        return $output;
     }
 
     // Follow Up Payment
@@ -297,6 +441,387 @@ class M_New_Case extends CI_Model{
     		$output .= '<option value="'.$row->ob_checking_date.'">'.date('d F Y', strtotime($row->ob_checking_date)).'</option>';
     	}
     	return $output;
+    }
+
+    // Get Plan Benefit
+    public function get_plan_benefit($case_type, $case_status, $client="", $ob_checking="")
+    {
+        $where = " WHERE `case`.type = '{$case_type}' AND `case`.`status` IN ('{$case_status}')";
+        $where .= " AND `case`.id NOT IN (SELECT case_id FROM new_history_batch_detail WHERE status_batch != '9')";
+
+        if (!empty($client)) {
+            $where .= " AND client.id ='{$client}'";
+        }
+        if (!empty($ob_checking)) {
+            $where .= " AND DATE_FORMAT(`case`.original_bill_checked_date, '%Y-%m-%d') ='{$ob_checking}'";
+        }
+
+        $sql = "SELECT plan.id as plan_id,
+        plan.name AS plan
+        FROM plan
+        JOIN `case` ON plan.id = `case`.plan
+        JOIN client ON client.id = `case`.client
+        ".$where.
+        " GROUP BY plan.name";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Plan Benefit --</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->plan_id.'">'.$row->plan.'</option>';
+        }
+        return $output;
+    }
+
+    public function get_plan_benefit_2($case_type, $case_status, $payment_by="", $tgl_batch="", $history_batch="", $status_batch="", $client="", $user="")
+    {
+        // $query = $this->db->query("SELECT a.id AS id_client, a.full_name AS client_name FROM client AS a JOIN `case` AS b ON a.id = b.client JOIN history_batch_detail AS c ON b.id = c.case_id JOIN history_batch AS d ON c.history_id = d.id WHERE c.change_status = '1' AND d.type = '$type' GROUP BY a.id ORDER BY a.full_name ASC");
+        // return $query->result();
+
+        $where = " WHERE `case`.type = '{$case_type}' AND `case`.`status` ='{$case_status}'";
+        $where .= " AND new_history_batch_detail.status_batch NOT IN ('9','1','2','4','99')";
+
+        if (!empty($payment_by)) {
+            $where .= " AND program.claim_paid_by ='{$payment_by}'";
+        }
+
+        if (!empty($tgl_batch)) {
+            $where .= " AND new_history_batch.tanggal_batch ='{$tgl_batch}'";
+        }
+
+        if (!empty($history_batch)) {
+            $where .= " AND new_history_batch.keterangan ='{$history_batch}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch.username ='{$user}'";
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        // if (!empty($source_bank)) {
+        //  $where .= " AND client.bank ='{$source_bank}'";
+        // }
+
+        // if (!empty($source_account)) {
+        //  $where .= " AND client.account_no ='{$source_account}'";
+        // }
+
+        if (!empty($status_batch)) {
+            $where .= " AND new_history_batch_detail.status_batch ='{$status_batch}'";
+        }
+
+        if (!empty($client)) {
+            $where .= " AND client.id ='{$client}'";
+        }
+
+        $sql = "SELECT 
+        plan.id AS id_plan,
+        plan.name AS plan_name
+        FROM new_history_batch 
+        JOIN new_history_batch_detail ON new_history_batch.id = new_history_batch_detail.history_id
+        JOIN `case` ON new_history_batch_detail.case_id = `case`.id
+        JOIN program ON `case`.program = program.id
+        JOIN client ON `case`.client = client.id
+        JOIN plan ON plan.id = `case`.plan
+        ".$where.
+        "GROUP BY plan.id";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Plan Benefit --</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->id_plan.'">'.$row->plan_name.'</option>';
+        }
+        return $output;
+    }
+
+    // Get Plan Benefit
+    public function get_plan_benefit_3($case_type, $case_status, $payment_by="", $tgl_batch="", $history_batch="", $status_batch="", $client="", $user="")
+    {
+        $where = " WHERE `case`.type = '{$case_type}' AND `case`.`status` ='{$case_status}'";
+        $where .= " AND new_history_batch_detail.status_batch NOT IN ('9','11','22')";
+
+        if (!empty($payment_by)) {
+            $where .= " AND program.claim_paid_by ='{$payment_by}'";
+        }
+
+        if (!empty($tgl_batch)) {
+            $where .= " AND new_history_batch.tanggal_batch ='{$tgl_batch}'";
+        }
+
+        if (!empty($history_batch)) {
+            $where .= " AND new_history_batch.keterangan ='{$history_batch}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch.username ='{$user}'";
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+        if (!empty($status_batch)) {
+            $where .= " AND new_history_batch_detail.status_batch ='{$status_batch}'";
+        }
+
+        if (!empty($client)) {
+            $where .= " AND client.id ='{$client}'";
+        }
+
+        $sql = "SELECT 
+        plan.id AS id_plan,
+        plan.name AS plan_name
+        FROM new_history_batch 
+        JOIN new_history_batch_detail ON new_history_batch.id = new_history_batch_detail.history_id
+        JOIN `case` ON new_history_batch_detail.case_id = `case`.id
+        JOIN program ON `case`.program = program.id
+        JOIN client ON `case`.client = client.id
+        JOIN plan ON plan.id = `case`.plan
+        ".$where.
+        " GROUP BY plan.name";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Plan Benefit --</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->id_plan.'">'.$row->plan_name.'</option>';
+        }
+        return $output;
+    }
+
+    public function get_plan_benefit_4($case_type, $case_status, $payment_by="", $source_bank="", $source_account="", $beneficiary_bank="", $beneficiary_account="", $status_batch="", $client="", $user="")
+    {   
+
+        $where = " WHERE `case`.`status` ='{$case_status}'";
+        if (!empty($payment_by)) {
+            $where .= " AND program.claim_paid_by ='{$payment_by}'";
+        }
+
+        if (!empty($status_batch)) {
+            $where .= " AND new_history_batch_detail.status_batch ='{$status_batch}'";
+        }
+
+        if (!empty($source_bank)) {
+            if ($source_bank == 'No') {
+                $where .= " AND (client.bank = '' OR client.bank IS NULL)";
+            } else {
+                $where .= " AND client.bank ='{$source_bank}'";
+            }
+        }
+
+        if (!empty($source_account)) {
+            if ($source_account == 'No') {
+                $where .= " AND (client.account_no = '' OR client.account_no IS NULL)";
+            } else {
+                $where .= " AND client.account_no ='{$source_account}'";
+            }
+        }
+
+        if (!empty($client)) {
+            $where .= " AND client.id ='{$client}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch.username ='{$user}'";
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        if ($case_type == '2') {
+            $where .= " AND `case`.type = '{$case_type}'";
+            if (!empty($beneficiary_bank)) {
+                if ($beneficiary_bank == 'No') {
+                    $where .= " AND (provider.bank = '' OR provider.bank IS NULL)";
+                } else {
+                    $where .= " AND provider.bank ='{$beneficiary_bank}'";
+                }
+            }
+
+            if (!empty($beneficiary_account)) {
+                if ($beneficiary_account == 'No') {
+                    $where .= " AND (provider.account_no = '' OR provider.account_no IS NULL)";
+                } else {
+                    $where .= " AND provider.account_no ='{$beneficiary_account}'";
+                }
+            }
+
+            $sql = "SELECT
+            plan.id AS id_plan,
+            plan.`name` AS plan_name
+            FROM provider
+            JOIN `case` ON case.provider = provider.id
+            JOIN plan ON plan.id = `case`.plan
+            JOIN program ON case.program = program.id
+            JOIN bank ON provider.bank = bank.id
+            JOIN client ON `case`.client = client.id
+            JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+            JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id"
+            .$where."
+            GROUP BY plan.id
+            ORDER BY plan.`name` ASC";
+        } 
+        if ($case_type == '1' || $case_type == '3') {
+            $where .= " AND `case`.type = '{$case_type}'";
+            $where .= " AND member.account_no != ''";
+            if (!empty($beneficiary_bank)) {
+                if ($beneficiary_bank == 'No') {
+                    $where .= " AND (member.bank = '' OR member.bank IS NULL)";
+                } else {
+                    $where .= " AND member.bank ='{$beneficiary_bank}'";
+                }
+            }
+
+            if (!empty($beneficiary_account)) {
+                if ($beneficiary_account == 'No') {
+                    $where .= " AND (member.account_no = '' OR member.account_no IS NULL)";
+                } else {
+                    $where .= " AND member.account_no ='{$beneficiary_account}'";
+                }
+            }
+
+            $sql = "SELECT
+            plan.id AS id_plan,
+            plan.`name` AS plan_name
+            FROM member
+            JOIN `case` ON member.id = `case`.patient
+            JOIN plan ON plan.id = `case`.plan
+            JOIN program ON `case`.program = program.id
+            JOIN client ON `case`.client = client.id
+            JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+            JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id"
+            .$where."
+            GROUP BY plan.id
+            ORDER BY plan.`name` ASC";
+        }
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Plan Benefit --</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->id_plan.'">'.$row->plan_name.'</option>';
+        }
+        return $output;
+    }
+
+    public function get_obv_remarks($case_type, $case_status, $payment_by="", $source_bank="", $source_account="", $beneficiary_bank="", $beneficiary_account="", $status_batch="", $client="", $plan="", $user="")
+    {   
+
+        $where = " WHERE `case`.`status` ='{$case_status}'";
+        if (!empty($payment_by)) {
+            $where .= " AND program.claim_paid_by ='{$payment_by}'";
+        }
+
+        if (!empty($status_batch)) {
+            $where .= " AND new_history_batch_detail.status_batch ='{$status_batch}'";
+        }
+
+        if (!empty($source_bank)) {
+            if ($source_bank == 'No') {
+                $where .= " AND (client.bank = '' OR client.bank IS NULL)";
+            } else {
+                $where .= " AND client.bank ='{$source_bank}'";
+            }
+        }
+
+        if (!empty($source_account)) {
+            if ($source_account == 'No') {
+                $where .= " AND (client.account_no = '' OR client.account_no IS NULL)";
+            } else {
+                $where .= " AND client.account_no ='{$source_account}'";
+            }
+        }
+
+        if (!empty($client)) {
+            $where .= " AND client.id ='{$client}'";
+        }
+
+        if (!empty($plan)) {
+            $where .= " AND plan.id ='{$plan}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch.username ='{$user}'";
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        if ($case_type == '2') {
+            $where .= " AND `case`.type = '{$case_type}'";
+            if (!empty($beneficiary_bank)) {
+                if ($beneficiary_bank == 'No') {
+                    $where .= " AND (provider.bank = '' OR provider.bank IS NULL)";
+                } else {
+                    $where .= " AND provider.bank ='{$beneficiary_bank}'";
+                }
+            }
+
+            if (!empty($beneficiary_account)) {
+                if ($beneficiary_account == 'No') {
+                    $where .= " AND (provider.account_no = '' OR provider.account_no IS NULL)";
+                } else {
+                    $where .= " AND provider.account_no ='{$beneficiary_account}'";
+                }
+            }
+
+            $sql = "SELECT
+            `case`.original_bill_verified_remarks AS obv_remarks
+            FROM provider
+            JOIN `case` ON case.provider = provider.id
+            JOIN plan ON plan.id = `case`.plan
+            JOIN program ON case.program = program.id
+            JOIN bank ON provider.bank = bank.id
+            JOIN client ON `case`.client = client.id
+            JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+            JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id"
+            .$where."
+            GROUP BY `case`.original_bill_verified_remarks
+            ORDER BY `case`.original_bill_verified_remarks ASC";
+        } 
+        if ($case_type == '1' || $case_type == '3') {
+            $where .= " AND `case`.type = '{$case_type}'";
+            $where .= " AND member.account_no != ''";
+            if (!empty($beneficiary_bank)) {
+                if ($beneficiary_bank == 'No') {
+                    $where .= " AND (member.bank = '' OR member.bank IS NULL)";
+                } else {
+                    $where .= " AND member.bank ='{$beneficiary_bank}'";
+                }
+            }
+
+            if (!empty($beneficiary_account)) {
+                if ($beneficiary_account == 'No') {
+                    $where .= " AND (member.account_no = '' OR member.account_no IS NULL)";
+                } else {
+                    $where .= " AND member.account_no ='{$beneficiary_account}'";
+                }
+            }
+
+            $sql = "SELECT
+            `case`.original_bill_verified_remarks AS obv_remarks
+            FROM member
+            JOIN `case` ON member.id = `case`.patient
+            JOIN plan ON plan.id = `case`.plan
+            JOIN program ON `case`.program = program.id
+            JOIN client ON `case`.client = client.id
+            JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+            JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id"
+            .$where."
+            GROUP BY `case`.original_bill_verified_remarks
+            ORDER BY `case`.original_bill_verified_remarks ASC";
+        }
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select OBV Remarks --</option>';
+        foreach($prepared->result() as $row)
+        {
+            if ($row->obv_remarks == '' || $row->obv_remarks == NULL) {
+                $remarks = 'No Remarks';
+            } else {
+                $remarks = $row->obv_remarks;
+            }
+            $output .= '<option value="'.$remarks.'">'.$remarks.'</option>';
+        }
+        return $output;
     }
 
     public function get_client($type, $status)
@@ -1266,6 +1791,8 @@ class M_New_Case extends CI_Model{
     {   
     	
     	$case_status = $this->input->post('status');
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		`case`.id AS case_id,
     		`case_status.`name` AS status_case,
@@ -1296,6 +1823,9 @@ class M_New_Case extends CI_Model{
     	if ($this->input->post('ob_checking')) {
     		$this->db->where("DATE_FORMAT(`case`.original_bill_checked_date, '%Y-%m-%d') ='".$this->input->post('ob_checking')."'");
     	}
+        if ($this->input->post('plan')) {
+            $this->db->where('plan.id ="'.$this->input->post('plan').'"');
+        }
     	if ($this->input->post('tipe') == '2') {
     		$this->db->where('case.type', '2');
     	}
@@ -1318,8 +1848,8 @@ class M_New_Case extends CI_Model{
     	$this->db->join($this->table_1_6, $this->table_1.'.plan ='.$this->table_1_6.'.id');
     	$this->db->join($this->table_1_7, $this->table_1.'.provider ='.$this->table_1_7.'.id');
     	$this->db->join($this->table_1_11, $this->table_1_3.'.id ='.$this->table_1_11.'.client');
-    	$this->db->order_by('case.id','DESC');
-    	$this->db->group_by('case.id');
+    	$this->db->order_by($column, $order_by);
+    	$this->db->group_by('case_id');
     	$i = 0;
 
         foreach ($this->column_search_1 as $item) // loop column 
@@ -1373,6 +1903,8 @@ class M_New_Case extends CI_Model{
     public function case_all()
     {
     	$case_status = $this->input->post('status');
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		`case`.id AS case_id,
     		`case_status.`name` AS status_case,
@@ -1403,6 +1935,9 @@ class M_New_Case extends CI_Model{
     	if ($this->input->post('ob_checking')) {
     		$this->db->where("DATE_FORMAT(`case`.original_bill_checked_date, '%Y-%m-%d') ='".$this->input->post('ob_checking')."'");
     	}
+        if ($this->input->post('plan')) {
+            $this->db->where('plan.id ="'.$this->input->post('plan').'"');
+        }
     	if ($this->input->post('tipe') == '2') {
     		$this->db->where('case.type', '2');
     	}
@@ -1424,13 +1959,15 @@ class M_New_Case extends CI_Model{
     	$this->db->join($this->table_1_6, $this->table_1.'.plan ='.$this->table_1_6.'.id');
     	$this->db->join($this->table_1_7, $this->table_1.'.provider ='.$this->table_1_7.'.id');
     	$this->db->join($this->table_1_11, $this->table_1_3.'.id ='.$this->table_1_11.'.client');
-    	$this->db->order_by('case.id','ASC');
-    	$this->db->group_by('case.id');
+    	$this->db->order_by($column, $order_by);
+        $this->db->group_by('case_id');
     	return $this->db->count_all_results();
     }
 
     private function initial_batching_query()
     {   
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		`case`.id AS case_id,
     		`case_status.`name` AS status_case,
@@ -1467,6 +2004,9 @@ class M_New_Case extends CI_Model{
     	if ($this->input->post('client')) {
     		$this->db->where('case.client ="'.$this->input->post('client').'"');
     	}
+        if ($this->input->post('plan')) {
+            $this->db->where('plan.id ="'.$this->input->post('plan').'"');
+        }
     	if ($this->input->post('tipe') == '2') {
     		$this->db->where('case.type', '2');
     	}
@@ -1490,8 +2030,8 @@ class M_New_Case extends CI_Model{
     	$this->db->join($this->table_1_10, $this->table_1.'.id ='.$this->table_1_10.'.case_id');
     	$this->db->join($this->table_1_9, $this->table_1_10.'.history_id ='.$this->table_1_9.'.id');
     	$this->db->join($this->table_1_11, $this->table_1_3.'.id ='.$this->table_1_11.'.client');
-    	$this->db->order_by('case.id','DESC');
-    	$this->db->group_by('case.id');
+    	$this->db->order_by($column, $order_by);
+    	$this->db->group_by('case_id');
     	$i = 0;
 
         foreach ($this->column_search_1 as $item) // loop column 
@@ -1544,7 +2084,8 @@ class M_New_Case extends CI_Model{
 
     public function initial_batching_all()
     {
-
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		`case`.id AS case_id,
     		`case_status.`name` AS status_case,
@@ -1581,7 +2122,9 @@ class M_New_Case extends CI_Model{
     	if ($this->input->post('client')) {
     		$this->db->where('case.client ="'.$this->input->post('client').'"');
     	}
-    	
+    	if ($this->input->post('plan')) {
+            $this->db->where('plan.id ="'.$this->input->post('plan').'"');
+        }
     	if ($this->input->post('tipe') == '2') {
     		$this->db->where('case.type', '2');
     	}
@@ -1604,14 +2147,16 @@ class M_New_Case extends CI_Model{
     	$this->db->join($this->table_1_10, $this->table_1.'.id ='.$this->table_1_10.'.case_id');
     	$this->db->join($this->table_1_9, $this->table_1_10.'.history_id ='.$this->table_1_9.'.id');
     	$this->db->join($this->table_1_11, $this->table_1_3.'.id ='.$this->table_1_11.'.client');
-    	$this->db->order_by('case.id','ASC');
-    	$this->db->group_by('case.id');
+    	$this->db->order_by($column, $order_by);
+    	$this->db->group_by('case_id');
     	return $this->db->count_all_results();
     }
 
 
     private function case_batching_query()
     {   
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		`case`.id AS case_id,
     		`case_status.`name` AS status_case,
@@ -1648,6 +2193,9 @@ class M_New_Case extends CI_Model{
     	if ($this->input->post('client')) {
     		$this->db->where('case.client ="'.$this->input->post('client').'"');
     	}
+        if ($this->input->post('plan')) {
+            $this->db->where('plan.id ="'.$this->input->post('plan').'"');
+        }
     	if ($this->input->post('tipe') == '2') {
     		$this->db->where('case.type', '2');
     	}
@@ -1671,8 +2219,8 @@ class M_New_Case extends CI_Model{
     	$this->db->join($this->table_1_10, $this->table_1.'.id ='.$this->table_1_10.'.case_id');
     	$this->db->join($this->table_1_9, $this->table_1_10.'.history_id ='.$this->table_1_9.'.id');
     	$this->db->join($this->table_1_11, $this->table_1_3.'.id ='.$this->table_1_11.'.client');
-    	$this->db->order_by('case.id','DESC');
-    	$this->db->group_by('case.id');
+    	$this->db->order_by($column, $order_by);
+    	$this->db->group_by('case_id');
     	$i = 0;
 
         foreach ($this->column_search_1 as $item) // loop column 
@@ -1725,7 +2273,8 @@ class M_New_Case extends CI_Model{
 
     public function case_batching_all()
     {
-
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		`case`.id AS case_id,
     		`case_status.`name` AS status_case,
@@ -1762,7 +2311,9 @@ class M_New_Case extends CI_Model{
     	if ($this->input->post('client')) {
     		$this->db->where('case.client ="'.$this->input->post('client').'"');
     	}
-    	
+    	if ($this->input->post('plan')) {
+            $this->db->where('plan.id ="'.$this->input->post('plan').'"');
+        }
     	if ($this->input->post('tipe') == '2') {
     		$this->db->where('case.type', '2');
     	}
@@ -1785,13 +2336,15 @@ class M_New_Case extends CI_Model{
     	$this->db->join($this->table_1_10, $this->table_1.'.id ='.$this->table_1_10.'.case_id');
     	$this->db->join($this->table_1_9, $this->table_1_10.'.history_id ='.$this->table_1_9.'.id');
     	$this->db->join($this->table_1_11, $this->table_1_3.'.id ='.$this->table_1_11.'.client');
-    	$this->db->order_by('case.id','ASC');
-    	$this->db->group_by('case.id');
+    	$this->db->order_by($column, $order_by);
+    	$this->db->group_by('case_id');
     	return $this->db->count_all_results();
     }
 
     private function payment_batching_query()
     {   
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		`case`.id AS case_id,
     		`case_status.`name` AS status_case,
@@ -1816,9 +2369,9 @@ class M_New_Case extends CI_Model{
     		member.account_no AS account_no_member,
     		provider.account_no AS account_no_provider"
     	);
-    	if ($this->input->post('payment_by')) {
-    		$this->db->where('program.claim_paid_by ="'.$this->input->post('payment_by').'"');
-    	}
+    	// if ($this->input->post('payment_by')) {
+    	// 	$this->db->where('program.claim_paid_by ="'.$this->input->post('payment_by').'"');
+    	// }
 
     	if ($this->input->post('source_bank')) {
     		$source_bank = $this->input->post('source_bank');
@@ -1850,6 +2403,21 @@ class M_New_Case extends CI_Model{
     	if ($this->input->post('client')) {
     		$this->db->where('case.client ="'.$this->input->post('client').'"');
     	}
+        if ($this->input->post('plan')) {
+            $this->db->where('plan.id ="'.$this->input->post('plan').'"');
+        }
+        if ($this->input->post('obv_remarks')) {
+            $obv_remarks = $this->input->post('obv_remarks');
+            if ($obv_remarks == 'No Remarks') {
+                $this->db->where("(`case`.original_bill_verified_remarks = '' OR `case`.original_bill_verified_remarks IS NULL)");
+
+            } else {
+                $this->db->where('`case`.original_bill_verified_remarks ="'.$obv_remarks.'"');
+            }
+        }
+        // if ($this->input->post('obv_remarks')) {
+        //     $this->db->where('`case`.original_bill_verified_remarks ="'.$this->input->post('obv_remarks').'"');
+        // }
 
     	if ($this->input->post('tipe') == '2') {
     		$this->db->where('case.type', '2');
@@ -1893,6 +2461,22 @@ class M_New_Case extends CI_Model{
     	}
     	if ($this->input->post('tipe') == '3') {
     		$this->db->where('case.type', '3');
+            if ($this->input->post('beneficiary_bank')) {
+                $beneficiary_bank = $this->input->post('beneficiary_bank');
+                if ($beneficiary_bank == 'No') {
+                    $this->db->where("(member.bank = '' OR member.bank IS NULL)");
+                } else {
+                    $this->db->where('member.bank ="'.$beneficiary_bank.'"');
+                }
+            }
+            if ($this->input->post('beneficiary_account')) {
+                $beneficiary_account = $this->input->post('beneficiary_account');
+                if ($beneficiary_bank == 'No') {
+                    $this->db->where("(member.account_no = '' OR member.account_no IS NULL)");
+                } else {
+                    $this->db->where('member.account_no ="'.$beneficiary_account.'"');
+                }
+            }
     	}
 
     	$this->db->where('case_status.`status` IN ('.$this->input->post('status').')');
@@ -1909,7 +2493,7 @@ class M_New_Case extends CI_Model{
     	$this->db->join($this->table_1_10, $this->table_1.'.id ='.$this->table_1_10.'.case_id');
     	$this->db->join($this->table_1_9, $this->table_1_10.'.history_id ='.$this->table_1_9.'.id');
     	$this->db->join($this->table_1_11, $this->table_1_3.'.id ='.$this->table_1_11.'.client');
-    	$this->db->order_by('case.id','DESC');
+    	$this->db->order_by($column, $order_by);
     	$this->db->group_by('case.id');
     	$i = 0;
 
@@ -1963,7 +2547,8 @@ class M_New_Case extends CI_Model{
 
     public function payment_batching_all()
     {
-
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		`case`.id AS case_id,
     		`case_status.`name` AS status_case,
@@ -1988,9 +2573,9 @@ class M_New_Case extends CI_Model{
     		member.account_no AS account_no_member,
     		provider.account_no AS account_no_provider"
     	);
-    	if ($this->input->post('payment_by')) {
-    		$this->db->where('program.claim_paid_by ="'.$this->input->post('payment_by').'"');
-    	}
+    	// if ($this->input->post('payment_by')) {
+    	// 	$this->db->where('program.claim_paid_by ="'.$this->input->post('payment_by').'"');
+    	// }
 
     	if ($this->input->post('source_bank')) {
     		$source_bank = $this->input->post('source_bank');
@@ -2021,6 +2606,21 @@ class M_New_Case extends CI_Model{
     	if ($this->input->post('client')) {
     		$this->db->where('case.client ="'.$this->input->post('client').'"');
     	}
+        if ($this->input->post('plan')) {
+            $this->db->where('plan.id ="'.$this->input->post('plan').'"');
+        }
+        if ($this->input->post('obv_remarks')) {
+            $obv_remarks = $this->input->post('obv_remarks');
+            if ($obv_remarks == 'No Remarks') {
+                $this->db->where("(`case`.original_bill_verified_remarks = '' OR `case`.original_bill_verified_remarks IS NULL)");
+
+            } else {
+                $this->db->where('`case`.original_bill_verified_remarks ="'.$obv_remarks.'"');
+            }
+        }
+        // if ($this->input->post('obv_remarks')) {
+        //     $this->db->where('`case`.original_bill_verified_remarks ="'.$this->input->post('obv_remarks').'"');
+        // }
 
     	if ($this->input->post('tipe') == '2') {
     		$this->db->where('case.type', '2');
@@ -2079,7 +2679,7 @@ class M_New_Case extends CI_Model{
     	$this->db->join($this->table_1_10, $this->table_1.'.id ='.$this->table_1_10.'.case_id');
     	$this->db->join($this->table_1_9, $this->table_1_10.'.history_id ='.$this->table_1_9.'.id');
     	$this->db->join($this->table_1_11, $this->table_1_3.'.id ='.$this->table_1_11.'.client');
-    	$this->db->order_by('case.id','ASC');
+    	$this->db->order_by($column, $order_by);
     	$this->db->group_by('case.id');
     	return $this->db->count_all_results();
     }
@@ -2087,6 +2687,8 @@ class M_New_Case extends CI_Model{
     // CPV List
     private function cpv_list_query()
     {   
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		new_cpv_list.id AS cpv_id,
     		new_cpv_list.cpv_number AS cpv_number,
@@ -2100,15 +2702,27 @@ class M_New_Case extends CI_Model{
     		new_cpv_list.approve AS status_approve"
     	);
 
-    	$this->db->from($this->table_2);
-    	$this->db->join($this->table_2_2, $this->table_2.'.id ='.$this->table_2_2.'.cpv_id');
-    	$this->db->join($this->table_2_3, $this->table_2_2.'.case_id ='.$this->table_2_3.'.id');
-    	$this->db->join($this->table_2_4, $this->table_2_3.'.client ='.$this->table_2_4.'.id');
-    	$this->db->join($this->table_2_5, $this->table_2_4.'.bank ='.$this->table_2_5.'.id');
-    	$this->db->join($this->table_2_6, $this->table_2_3.'.id ='.$this->table_2_6.'.`case`');
-    	$this->db->order_by('new_cpv_list.id','DESC');
-    	$this->db->group_by('new_cpv_list.id');
-    	$i = 0;
+        if ($this->input->post('tipe')) {
+            $this->db->where('new_cpv_list.case_type ="'.$this->input->post('tipe').'"');
+        }
+
+        if ($this->input->post('client')) {
+            $this->db->where('client.id ="'.$this->input->post('client').'"');
+        }
+
+        if ($this->input->post('status')) {
+            $this->db->where('new_cpv_list.approve ="'.$this->input->post('status').'"');
+        }
+
+        $this->db->from($this->table_2);
+        $this->db->join($this->table_2_2, $this->table_2.'.id ='.$this->table_2_2.'.cpv_id');
+        $this->db->join($this->table_2_3, $this->table_2_2.'.case_id ='.$this->table_2_3.'.id');
+        $this->db->join($this->table_2_4, $this->table_2_3.'.client ='.$this->table_2_4.'.id');
+        $this->db->join($this->table_2_5, $this->table_2_4.'.bank ='.$this->table_2_5.'.id');
+        $this->db->join($this->table_2_6, $this->table_2_3.'.id ='.$this->table_2_6.'.`case`');
+        $this->db->order_by($column, $order_by);
+        $this->db->group_by('cpv_id');
+        $i = 0;
 
         foreach ($this->column_search_2 as $item) // loop column 
         {
@@ -2160,6 +2774,8 @@ class M_New_Case extends CI_Model{
 
     public function cpv_list_all()
     {
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		new_cpv_list.id AS cpv_id,
     		new_cpv_list.cpv_number AS cpv_number,
@@ -2173,20 +2789,34 @@ class M_New_Case extends CI_Model{
     		new_cpv_list.approve AS status_approve"
     	);
 
-    	$this->db->from($this->table_2);
-    	$this->db->join($this->table_2_2, $this->table_2.'.id ='.$this->table_2_2.'.cpv_id');
-    	$this->db->join($this->table_2_3, $this->table_2_2.'.case_id ='.$this->table_2_3.'.id');
-    	$this->db->join($this->table_2_4, $this->table_2_3.'.client ='.$this->table_2_4.'.id');
-    	$this->db->join($this->table_2_5, $this->table_2_4.'.bank ='.$this->table_2_5.'.id');
-    	$this->db->join($this->table_2_6, $this->table_2_3.'.id ='.$this->table_2_6.'.`case`');
-    	$this->db->order_by('new_cpv_list.id','DESC');
-    	$this->db->group_by('new_cpv_list.id');
-    	return $this->db->count_all_results();
+        if ($this->input->post('tipe')) {
+            $this->db->where('new_cpv_list.case_type ="'.$this->input->post('tipe').'"');
+        }
+
+        if ($this->input->post('client')) {
+            $this->db->where('client.id ="'.$this->input->post('client').'"');
+        }
+
+        if ($this->input->post('status')) {
+            $this->db->where('new_cpv_list.approve ="'.$this->input->post('status').'"');
+        }
+
+        $this->db->from($this->table_2);
+        $this->db->join($this->table_2_2, $this->table_2.'.id ='.$this->table_2_2.'.cpv_id');
+        $this->db->join($this->table_2_3, $this->table_2_2.'.case_id ='.$this->table_2_3.'.id');
+        $this->db->join($this->table_2_4, $this->table_2_3.'.client ='.$this->table_2_4.'.id');
+        $this->db->join($this->table_2_5, $this->table_2_4.'.bank ='.$this->table_2_5.'.id');
+        $this->db->join($this->table_2_6, $this->table_2_3.'.id ='.$this->table_2_6.'.`case`');
+        $this->db->order_by($column, $order_by);
+        $this->db->group_by('cpv_id');
+        return $this->db->count_all_results();
     }
 
     // Detail CPV Cashless
     private function cpv_cashless_query()
     {   
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$cpv_id = $this->input->post('cpv_id');
     	$this->db->select("
     		`case`.id AS case_id,
@@ -2274,6 +2904,8 @@ class M_New_Case extends CI_Model{
 
     public function cpv_cashless_all()
     {
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$cpv_id = $this->input->post('cpv_id');
     	$this->db->select("
     		`case`.id AS case_id,
@@ -2315,6 +2947,8 @@ class M_New_Case extends CI_Model{
     // Detail CPV Reimbursement
     private function cpv_reimbursement_query()
     {   
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$cpv_id = $this->input->post('cpv_id');
     	$this->db->select("
     		`case`.id AS case_id,
@@ -2401,6 +3035,8 @@ class M_New_Case extends CI_Model{
 
     public function cpv_reimbursement_all()
     {
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$cpv_id = $this->input->post('cpv_id');
     	$this->db->select("
     		`case`.id AS case_id,
@@ -2441,6 +3077,8 @@ class M_New_Case extends CI_Model{
     // FuP List
     private function fup_list_query()
     {   
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		send_back_list.id AS fup_id,
     		send_back_list.follow_up_payment_number AS fup_number,
@@ -2450,12 +3088,20 @@ class M_New_Case extends CI_Model{
     		SUM(worksheet_header.total_cover) AS total_cover"
     	);
 
+        if ($this->input->post('tipe')) {
+            $this->db->where('send_back_list.case_type ="'.$this->input->post('tipe').'"');
+        }
+
+        if ($this->input->post('client')) {
+            $this->db->where('client.id ="'.$this->input->post('client').'"');
+        }
+
     	$this->db->from($this->table_5);
     	$this->db->join($this->table_5_2, $this->table_5.'.id ='.$this->table_5_2.'.send_back_id');
     	$this->db->join($this->table_5_3, $this->table_5_2.'.case_id ='.$this->table_5_3.'.id');
     	$this->db->join($this->table_5_4, $this->table_5_3.'.client ='.$this->table_5_4.'.id');
     	$this->db->join($this->table_5_6, $this->table_5_3.'.id ='.$this->table_5_6.'.`case`');
-    	$this->db->order_by('send_back_list.id','DESC');
+    	$this->db->order_by($column, $order_by);
     	$this->db->group_by('send_back_list.id');
     	$i = 0;
 
@@ -2509,6 +3155,8 @@ class M_New_Case extends CI_Model{
 
     public function fup_list_all()
     {
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		send_back_list.id AS fup_id,
     		send_back_list.follow_up_payment_number AS fup_number,
@@ -2518,12 +3166,20 @@ class M_New_Case extends CI_Model{
     		SUM(worksheet_header.total_cover) AS total_cover"
     	);
 
+        if ($this->input->post('tipe')) {
+            $this->db->where('send_back_list.case_type ="'.$this->input->post('tipe').'"');
+        }
+
+        if ($this->input->post('client')) {
+            $this->db->where('client.id ="'.$this->input->post('client').'"');
+        }
+        
     	$this->db->from($this->table_5);
     	$this->db->join($this->table_5_2, $this->table_5.'.id ='.$this->table_5_2.'.send_back_id');
     	$this->db->join($this->table_5_3, $this->table_5_2.'.case_id ='.$this->table_5_3.'.id');
     	$this->db->join($this->table_5_4, $this->table_5_3.'.client ='.$this->table_5_4.'.id');
     	$this->db->join($this->table_5_6, $this->table_5_3.'.id ='.$this->table_5_6.'.`case`');
-    	$this->db->order_by('send_back_list.id','DESC');
+    	$this->db->order_by($column, $order_by);
     	$this->db->group_by('send_back_list.id');
     	return $this->db->count_all_results();
     }
@@ -2531,6 +3187,8 @@ class M_New_Case extends CI_Model{
     // FuP Detail
     private function fup_detail_query()
     {   
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$fup_id = $this->input->post('fup_id');
     	$this->db->select("
     		`case`.id AS case_id,
@@ -2611,6 +3269,8 @@ class M_New_Case extends CI_Model{
     public function fup_detail_all()
     {
     	$fup_id = $this->input->post('fup_id');
+        $column = $this->input->post('column');
+        $order_by = $this->input->post('order_by');
     	$this->db->select("
     		`case`.id AS case_id,
     		`case`.type AS case_type,

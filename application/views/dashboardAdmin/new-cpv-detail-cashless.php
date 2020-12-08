@@ -47,16 +47,16 @@
                 </label>
               </div>
             </th>
-            <th style="font-size: 14px;" width="50px">No.</th>
-            <th style="font-size: 14px;" width="80px">Case Id</th>
-            <th style="font-size: 14px;" width="100px">Case Type</th>
-            <th style="font-size: 14px;" width="120px">Service Type</th>
-            <th style="font-size: 14px;" width="250px">Patient</th>
-            <th style="font-size: 14px;" width="250px">Provider</th>
-            <th style="font-size: 14px;" width="250px">Account Name</th>
-            <th style="font-size: 14px;" width="200px">Bank</th>
-            <th style="font-size: 14px;" width="130px">Acc Numb</th>
-            <th style="font-size: 14px;" width="140px">Cover Amount</th>
+            <th style="font-size: 14px;" width="3%">No.</th>
+            <th style="font-size: 14px;" width="8%">Case Id</th>
+            <th style="font-size: 14px;" width="9%">Case Type</th>
+            <th style="font-size: 14px;" width="9%">Service Type</th>
+            <th style="font-size: 14px;" width="13%">Patient</th>
+            <th style="font-size: 14px;" width="13%">Provider</th>
+            <th style="font-size: 14px;" width="13%">Account Name</th>
+            <th style="font-size: 14px;" width="10%">Bank</th>
+            <th style="font-size: 14px;" width="9%">Acc Number</th>
+            <th style="font-size: 14px;" width="13%">Cover Amount</th>
           </tr>
         </thead>
         <tbody style="font-size: 12px;">
@@ -134,7 +134,7 @@
       var checkbox = $('.check:checked');
       if(checkbox.length > 0)
       {
-        var case_type = $('#type').val();
+        var case_type = '<?= $cpv_detail->case_type; ?>';
         var cpv_id = '<?= $cpv_detail->cpv_id; ?>';
 
         var checkbox_value = [];
@@ -149,7 +149,7 @@
         }).then((result) => {
           if (result) {
             $.ajax({
-              url:"<?php echo base_url(); ?>Process_Status/Re_Batching_CPV?cpv_id=" + cpv_id,
+              url:"<?php echo base_url(); ?>Process_Status/Re_Batching_CPV?cpv_id=" + cpv_id + "&case_type=" + case_type,
               method:"POST",
               data:{
                 checkbox_value:checkbox_value,

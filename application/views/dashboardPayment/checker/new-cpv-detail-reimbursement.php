@@ -126,7 +126,7 @@
       var checkbox = $('.check:checked');
       if(checkbox.length > 0)
       {
-        var case_type = $('#type').val();
+        var case_type = '<?= $cpv_detail->case_type; ?>';
         var cpv_id = '<?= $cpv_detail->cpv_id; ?>';
 
         var checkbox_value = [];
@@ -141,7 +141,7 @@
           }).then((result) => {
             if (result) {
               $.ajax({
-                url:"<?php echo base_url(); ?>Process_Status/Re_Batching_CPV?cpv_id=" + cpv_id,
+                url:"<?php echo base_url(); ?>Process_Status/Re_Batching_CPV?cpv_id=" + cpv_id + "&case_type=" + case_type,
                 method:"POST",
                 data:{
                   checkbox_value:checkbox_value,

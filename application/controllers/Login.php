@@ -14,13 +14,19 @@ class Login extends CI_Controller {
 	{
 		if ($this->session->has_userdata('logged_in') == TRUE) {
 			if ($this->session->userdata('level_user') == '-1') {
-				redirect('Dashboard_Admin');
+				redirect('Dashboard_Admin/case_data');
 			}
-			else if ($this->session->userdata('level_user') == '8') {
-				redirect('Dashboard_Batcher');
+			else if ($this->session->userdata('level_user') == '91') {
+				redirect('Dashboard_CBD_Batcher/case_data');
 			}
-			else if ($this->session->userdata('level_user') == '17') {
-				redirect('Dashboard_Supervisor');
+			else if ($this->session->userdata('level_user') == '92') {
+				redirect('Dashboard_CBD_Checker/batching_case');
+			}
+			else if ($this->session->userdata('level_user') == '93') {
+				redirect('Dashboard_Payment_Admin/case_data');
+			}
+			else if ($this->session->userdata('level_user') == '94') {
+				redirect('Dashboard_Payment_Checker/batching_case');
 			}
 		} else {
 			$this->load->view('login-page');

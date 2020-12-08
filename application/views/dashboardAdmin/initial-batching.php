@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col-md-6">
         <div class="form-group">
-          <label>Case Type</label>
+          <label>Case Type <span style="color: red;">*</span></label>
           <select id="type" class="form-control">
             <option value="2">Cashless</option>
             <option value="1">Reimbursement</option>
@@ -16,7 +16,7 @@
       </div>
       <div class="col-md-6">
         <div class="form-group">
-          <label>Case Status</label>
+          <label>Case Status <span style="color: red;">*</span></label>
           <select id="case_status" class="form-control">
             <option value="" hidden="">-- Select Status --</option>
           </select>
@@ -44,7 +44,7 @@
     <div class="row">
       <div class="col-md-6">
         <div class="form-group">
-          <label>Batch Status</label>
+          <label>Batch Status <span style="color: red;">*</span></label>
           <select id="status_batch" name="status_batch" class="form-control">
             <option value="">-- Select Batch Status --</option>
           </select>
@@ -52,7 +52,7 @@
       </div>
       <div class="col-md-6">
         <div class="form-group">
-          <label>Client</label>
+          <label>Client <span style="color: red;">*</span></label>
           <select id="client" name="client_name" class="form-control" required="">
             <option value="">-- Select Client --</option>
           </select>
@@ -62,7 +62,49 @@
     <div class="row">
       <div class="col-md-6">
         <div class="form-group">
-          <label>Action</label>
+          <label>Plan Benefit</label>
+          <select id="plan" name="plan" class="form-control" required="">
+            <option value="">-- Select Plan Benefit --</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Column Sort</label>
+          <div class="row">
+            <div class="col-md-6">
+              <select id="column" name="column" class="form-control" required="">
+                <option value="case_id">Case Id</option>
+                <option value="status_case">Case Status</option>
+                <option value="case_ref">Case Ref</option>
+                <option value="receive_date">Receive Date</option>
+                <option value="category_case">Case Category</option>
+                <option value="type">Case Type</option>
+                <option value="client">Client</option>
+                <option value="member">Patient</option>
+                <option value="member_id">Member Id</option>
+                <option value="member_card">Member Card</option>
+                <option value="policy_no">Policy No</option>
+                <option value="provider">Medical Provider</option>
+                <option value="other_provider">Non-Panel</option>
+                <option value="admission_date">Admission Date</option>
+                <option value="discharge_date">Discharge Date</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <select id="order_by" name="order_by" class="form-control" required="">
+                <option value="ASC">A to Z</option>
+                <option value="DESC">Z to A</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Action <span style="color: red;">*</span></label>
           <select id="action" class="form-control" name="action" required="">
             <option value="" hidden="">-- Select Action --</option>
           </select>
@@ -70,7 +112,7 @@
       </div>
       <div class="col-md-6">
         <div class="form-group">
-          <label>Remarks</label>
+          <label>Remarks <span style="color: red;">*</span></label>
           <input type="text" name="remarks" id="remarks" class="form-control">
         </div>
       </div>
@@ -151,6 +193,9 @@
           data.history_batch = $('#history_batch').val();
           data.status_batch = $('#status_batch').val();
           data.client = $('#client').val();
+          data.plan = $('#plan').val();
+          data.column = $('#column').val();
+          data.order_by = $('#order_by').val();
         },
         "datatype": 'json',
       },
@@ -523,6 +568,41 @@
     });
 
     $('#client').change(function(){
+      var case_type = $('#type').val();
+      var case_status = $('#case_status').val();
+      var tgl_batch = $("#tgl_batch").val();
+      var history_batch = $("#history_batch").val();
+      var status_batch = $("#status_batch").val();
+      var client = $("#client").val();
+
+      $.ajax({
+        url:"<?php echo base_url(); ?>Validated/get_plan_benefit_2",
+        method:"POST",
+        data:{
+          case_type:case_type, 
+          case_status:case_status,
+          tgl_batch:tgl_batch,
+          history_batch:history_batch,
+          payment_by:'',
+          status_batch:status_batch,
+          client:client,
+        },
+        success:function(data) {
+          $('#plan').html(data);
+        }
+      });
+      table.ajax.reload();
+    });
+
+    $('#plan').change(function(){
+      table.ajax.reload();
+    });
+
+    $('#column').change(function(){
+      table.ajax.reload();
+    });
+
+    $('#order_by').change(function(){
       table.ajax.reload();
     });
 
@@ -653,7 +733,7 @@
             swal({
               title: "Error!",
               icon: "error",
-              text: "Please Inputt a Remarks",
+              text: "Please Input a Remarks",
               buttons: "Close",
             });
           } else {

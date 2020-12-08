@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col-md-6">
         <div class="form-group">
-          <label>Case Type</label>
+          <label>Case Type <span style="color: red;">*</span></label>
           <select id="type" class="form-control">
             <option value="2">Cashless</option>
             <option value="1">Reimbursement</option>
@@ -16,7 +16,7 @@
       </div>
       <div class="col-md-6">
         <div class="form-group">
-          <label>Case Status</label>
+          <label>Case Status <span style="color: red;">*</span></label>
           <select id="case_status" class="select2 form-control select2-multiple" style="width: 100%!important;" multiple="" data-placeholder=" -- Select Status --">
           </select>
           <input type="hidden" name="" id="status" readonly="">
@@ -38,6 +38,48 @@
           <select id="ob_checking" name="ob_checking" class="form-control" required="">
             <option value="">-- Select Date --</option>
           </select>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Plan Benefit</label>
+          <select id="plan" name="plan" class="form-control" required="">
+            <option value="">-- Select Plan Benefit --</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Column Sort</label>
+          <div class="row">
+            <div class="col-md-6">
+              <select id="column" name="column" class="form-control" required="">
+                <option value="case_id">Case Id</option>
+                <option value="status_case">Case Status</option>
+                <option value="case_ref">Case Ref</option>
+                <option value="receive_date">Receive Date</option>
+                <option value="category_case">Case Category</option>
+                <option value="type">Case Type</option>
+                <option value="client">Client</option>
+                <option value="member">Patient</option>
+                <option value="member_id">Member Id</option>
+                <option value="member_card">Member Card</option>
+                <option value="policy_no">Policy No</option>
+                <option value="provider">Medical Provider</option>
+                <option value="other_provider">Non-Panel</option>
+                <option value="admission_date">Admission Date</option>
+                <option value="discharge_date">Discharge Date</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <select id="order_by" name="order_by" class="form-control" required="">
+                <option value="ASC">A to Z</option>
+                <option value="DESC">Z to A</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -112,7 +154,7 @@
             </a>
           </div>
           <div class="form-group">
-            <label>Case Type</label>
+            <label>Case Type <span style="color: red;">*</span></label>
             <select id="type" name="case_type" class="form-control" required="">
               <option value="2">Cashless</option>
               <option value="1">Reimbursement</option>
@@ -120,11 +162,11 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Batching File (From Template Batching)</label>
+            <label>Batching File (From Template Batching) <span style="color: red;">*</span></label>
             <input type="file" name="file" class="form-control dokumen" required="">
           </div>
           <div class="form-group">
-            <label>Remarks</label>
+            <label>Remarks <span style="color: red;">*</span></label>
             <input type="text" name="remarks" class="form-control" required="">
           </div>
         </div>
@@ -146,6 +188,7 @@
       "serverSide": true,
       "processing": true,
       "ordering": false,
+      "order": [],
       "ajax":{
         "url" :  base + 'New_DataTables/Case_Data',
         "type" : 'POST',
@@ -154,6 +197,9 @@
           status: function() { return $('#status').val() },
           client: function() { return $('#client').val() },
           ob_checking: function() { return $('#ob_checking').val() },
+          plan: function() { return $('#plan').val() },
+          column: function() { return $('#column').val() },
+          order_by: function() { return $('#order_by').val() },
         },
         "datatype": 'json',
       },
@@ -300,8 +346,10 @@
 
       var case_status = selMulti.join("','");
       var client = $('#client').val();
+      var ob_checking = $('#ob_checking').val();
       if (client == '') {
         $('#ob_checking').html('<option value="" selected>-- Select Date --</option>');
+        $('#plan').html('<option value="" selected>-- Select Plan Benefit --</option>');
       } else {
         $.ajax({
           url:"<?php echo base_url(); ?>Validated/get_ob_checking_date",
@@ -315,11 +363,62 @@
             $('#ob_checking').html(data);
           }
         });
+        $.ajax({
+          url:"<?php echo base_url(); ?>Validated/get_plan_benefit",
+          method:"POST",
+          data:{
+            case_type:case_type, 
+            case_status:case_status,
+            client:client,
+            ob_checking:ob_checking,
+          },
+          success:function(data) {
+            $('#plan').html(data);
+          }
+        });
       }
       table.ajax.reload();
     });
 
     $('#ob_checking').change(function(){
+      var case_type = $('#type').val();
+      var selMulti = $.map($("#case_status option:selected"), function (el, i) {
+        return $(el).val();
+      });
+      $("#status").val(selMulti.join("','"));
+
+      var case_status = selMulti.join("','");
+      var client = $('#client').val();
+      var ob_checking = $('#ob_checking').val();
+      if (ob_checking == '') {
+        $('#plan').html('<option value="" selected>-- Select Plan Benefit --</option>');
+      } else {
+        $.ajax({
+          url:"<?php echo base_url(); ?>Validated/get_plan_benefit",
+          method:"POST",
+          data:{
+            case_type:case_type, 
+            case_status:case_status,
+            client:client,
+            ob_checking:ob_checking,
+          },
+          success:function(data) {
+            $('#plan').html(data);
+          }
+        });
+      }
+      table.ajax.reload();
+    });
+
+    $('#plan').change(function(){
+      table.ajax.reload();
+    });
+
+    $('#column').change(function(){
+      table.ajax.reload();
+    });
+
+    $('#order_by').change(function(){
       table.ajax.reload();
     });
 
