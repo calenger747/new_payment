@@ -29,9 +29,9 @@
                 <li class="nav-small-cap">BATCHING CASE</li>
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Batching Case</span></a>
                     <ul aria-expanded="false" class="collapse">
-                        <li><a href="<?= base_url(); ?>Dashboard_Admin/initial_batching">Initial Batching</a></li>
-                        <li><a href="<?= base_url(); ?>Dashboard_Admin/batching_case">Proceed Status</a></li>
-                        <li><a href="<?= base_url(); ?>Dashboard_Admin/payment_batch">Generate CPV</a></li>
+                        <li><a href="<?= base_url(); ?>Dashboard_Admin/initial_batching">Document Batching</a></li>
+                        <li><a href="<?= base_url(); ?>Dashboard_Admin/batching_case">OBV Batching</a></li>
+                        <li><a href="<?= base_url(); ?>Dashboard_Admin/payment_batch">Payment Batching</a></li>
                     </ul>
                 </li>
 

@@ -33,12 +33,22 @@ class Process_Status extends CI_Controller {
 
 			for($count = 0; $count < count($case_id); $count++)
 			{
-				$cek_case_close = $this->new_case->cek_case_close($case_id[$count]);
-				if ($cek_case_close->case_closed_by == '1') {
-					$status_batch = '1';
-				} else {
+				// $cek_case_close = $this->new_case->cek_case_close($case_id[$count]);
+				// if ($cek_case_close->case_closed_by == '1') {
+				// 	$status_batch = '1';
+				// } else {
+				// 	$status_batch = '11';
+				// }
+
+				$cek_case_status = $this->new_case->cek_case_status($case_id[$count]);
+				if ($cek_case_status->status == '17' || $cek_case_status->status == '18' || $cek_case_status->status == '28' || $cek_case_status->status == '29') {
 					$status_batch = '11';
+				} else if ($cek_case_status->status == '15' || $cek_case_status->status == '26') {
+					$status_batch = '1';
+				} else if ($cek_case_status->status == '16' || $cek_case_status->status == '27') {
+					$status_batch = '3';
 				}
+
 				$data = array(
 					'history_id' 	=> $id_history,
 					'case_id' 		=> $case_id[$count],
@@ -202,11 +212,20 @@ class Process_Status extends CI_Controller {
 					FALSE);
 
                 //Sesuaikan sama nama kolom tabel di database
-				$cek_case_close = $this->new_case->cek_case_close($rowData[0][0]);
-				if ($cek_case_close->case_closed_by == '1') {
-					$status_batch = '1';
-				} else {
+				// $cek_case_close = $this->new_case->cek_case_close($rowData[0][0]);
+				// if ($cek_case_close->case_closed_by == '1') {
+				// 	$status_batch = '1';
+				// } else {
+				// 	$status_batch = '11';
+				// }
+
+				$cek_case_status = $this->new_case->cek_case_status($rowData[0][0]);
+				if ($cek_case_status->status == '17' || $cek_case_status->status == '18' || $cek_case_status->status == '28' || $cek_case_status->status == '29') {
 					$status_batch = '11';
+				} else if ($cek_case_status->status == '15' || $cek_case_status->status == '26') {
+					$status_batch = '1';
+				} else if ($cek_case_status->status == '16' || $cek_case_status->status == '27') {
+					$status_batch = '3';
 				}
 
 				$data = array(

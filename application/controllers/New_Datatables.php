@@ -81,6 +81,63 @@ class New_Datatables extends CI_Controller {
 		$no = $_POST['start'];
 		foreach ($list as $case) {
 			$no++;
+			if ($this->session->userdata('level_user') == '-1') {
+				$user = 'Dashboard_Admin';
+			} else if ($this->session->userdata('level_user') == '91') {
+				$user = 'Dashboard_CBD_Batcher';
+			} else if ($this->session->userdata('level_user') == '92') {
+				$user = 'Dashboard_CBD_Checker';
+			}
+
+			if ($case->case_type == '1') {
+				$type = 'Reimbursement';
+			} else if ($case->case_type == '2') {
+				$type = 'Cashless';
+			} else if ($case->case_type == '3') {
+				$type = 'Non-LOG';
+			}
+
+			$client_name = preg_replace('/(,)(?=[^\s])/', ', ', $case->client);
+
+			$count = $this->new_case->record_batching($case->batch_id);
+
+			$data[] = array(
+				'button' 			=> '<center>
+				<a href="'.base_url().$user.'/doc_batching_detail?batch_id='.$case->batch_id.'" class="detail" title="Show Detail Batching">
+				<button class="btn btn-sm btn-primary"><i class="mdi mdi-view-list"></i></button>
+				</a>
+				</center>',
+				"case_type" 		=> htmlspecialchars_decode(htmlentities($type)),
+				"tgl_batch" 		=> htmlspecialchars_decode(htmlentities(date('d F Y', strtotime($case->tgl_batch)))),
+				"client" 		=> htmlspecialchars_decode(htmlentities($client_name)),
+				"remarks" 			=> htmlspecialchars_decode(htmlentities($case->remarks)),
+				"record" 	=> htmlspecialchars_decode(htmlentities($count->record)),
+			);
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->new_case->initial_batching_all(),
+			"recordsFiltered" => $this->new_case->initial_batching_filtered(),
+			"data" => $data,
+			"type" => $tipe,
+			"client" => $client,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	// Doc Batching
+	public function Doc_Batching()
+	{
+		$tipe = $this->input->post('tipe');
+		$status = $this->input->post('status');
+		$client = $this->input->post('client');
+		$list = $this->new_case->datatable_doc_batching();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $case) {
+			$no++;
 
 			if ($case->type == '1') {
 				$type = 'Reimbursement';
@@ -117,8 +174,64 @@ class New_Datatables extends CI_Controller {
 
 		$output = array(
 			"draw" => $_POST['draw'],
-			"recordsTotal" => $this->new_case->initial_batching_all(),
-			"recordsFiltered" => $this->new_case->initial_batching_filtered(),
+			"recordsTotal" => $this->new_case->doc_batching_all(),
+			"recordsFiltered" => $this->new_case->doc_batching_filtered(),
+			"data" => $data,
+			"type" => $tipe,
+			"client" => $client,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	public function OBV_Batching()
+	{
+		$tipe = $this->input->post('tipe');
+		$status = $this->input->post('status');
+		$client = $this->input->post('client');
+		$list = $this->new_case->datatable_obv_batching();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $case) {
+			$no++;
+			if ($this->session->userdata('level_user') == '-1') {
+				$user = 'Dashboard_Admin';
+			} else if ($this->session->userdata('level_user') == '91') {
+				$user = 'Dashboard_CBD_Batcher';
+			} else if ($this->session->userdata('level_user') == '92') {
+				$user = 'Dashboard_CBD_Checker';
+			}
+
+			if ($case->case_type == '1') {
+				$type = 'Reimbursement';
+			} else if ($case->case_type == '2') {
+				$type = 'Cashless';
+			} else if ($case->case_type == '3') {
+				$type = 'Non-LOG';
+			}
+
+			$client_name = preg_replace('/(,)(?=[^\s])/', ', ', $case->client);
+
+			$count = $this->new_case->record_batching($case->batch_id);
+
+			$data[] = array(
+				'button' 			=> '<center>
+				<a href="'.base_url().$user.'/batching_case_detail?batch_id='.$case->batch_id.'" class="detail" title="Show Detail Batching">
+				<button class="btn btn-sm btn-primary"><i class="mdi mdi-view-list"></i></button>
+				</a>
+				</center>',
+				"case_type" 		=> htmlspecialchars_decode(htmlentities($type)),
+				"tgl_batch" 		=> htmlspecialchars_decode(htmlentities(date('d F Y', strtotime($case->tgl_batch)))),
+				"client" 		=> htmlspecialchars_decode(htmlentities($client_name)),
+				"remarks" 			=> htmlspecialchars_decode(htmlentities($case->remarks)),
+				"record" 	=> htmlspecialchars_decode(htmlentities($count->record)),
+			);
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->new_case->obv_batching_all(),
+			"recordsFiltered" => $this->new_case->obv_batching_filtered(),
 			"data" => $data,
 			"type" => $tipe,
 			"client" => $client,
@@ -176,6 +289,62 @@ class New_Datatables extends CI_Controller {
 			"draw" => $_POST['draw'],
 			"recordsTotal" => $this->new_case->case_batching_all(),
 			"recordsFiltered" => $this->new_case->case_batching_filtered(),
+			"data" => $data,
+			"type" => $tipe,
+			"client" => $client,
+		);
+        //output to json format
+		echo json_encode($output);
+	}
+
+	public function PP_Batching()
+	{
+		$tipe = $this->input->post('tipe');
+		$status = $this->input->post('status');
+		$client = $this->input->post('client');
+		$list = $this->new_case->datatable_pp_batching();
+		$data = array();
+		$no = $_POST['start'];
+		foreach ($list as $case) {
+			$no++;
+			if ($this->session->userdata('level_user') == '-1') {
+				$user = 'Dashboard_Admin';
+			} else if ($this->session->userdata('level_user') == '91') {
+				$user = 'Dashboard_CBD_Batcher';
+			} else if ($this->session->userdata('level_user') == '92') {
+				$user = 'Dashboard_CBD_Checker';
+			}
+
+			if ($case->case_type == '1') {
+				$type = 'Reimbursement';
+			} else if ($case->case_type == '2') {
+				$type = 'Cashless';
+			} else if ($case->case_type == '3') {
+				$type = 'Non-LOG';
+			}
+
+			$client_name = preg_replace('/(,)(?=[^\s])/', ', ', $case->client);
+
+			$count = $this->new_case->record_batching($case->batch_id);
+
+			$data[] = array(
+				'button' 			=> '<center>
+				<a href="'.base_url().$user.'/payment_batch_detail?batch_id='.$case->batch_id.'" class="detail" title="Show Detail Batching">
+				<button class="btn btn-sm btn-primary"><i class="mdi mdi-view-list"></i></button>
+				</a>
+				</center>',
+				"case_type" 		=> htmlspecialchars_decode(htmlentities($type)),
+				"tgl_batch" 		=> htmlspecialchars_decode(htmlentities(date('d F Y', strtotime($case->tgl_batch)))),
+				"client" 		=> htmlspecialchars_decode(htmlentities($client_name)),
+				"remarks" 			=> htmlspecialchars_decode(htmlentities($case->remarks)),
+				"record" 	=> htmlspecialchars_decode(htmlentities($count->record)),
+			);
+		}
+
+		$output = array(
+			"draw" => $_POST['draw'],
+			"recordsTotal" => $this->new_case->pp_batching_all(),
+			"recordsFiltered" => $this->new_case->pp_batching_filtered(),
 			"data" => $data,
 			"type" => $tipe,
 			"client" => $client,

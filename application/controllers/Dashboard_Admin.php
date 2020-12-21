@@ -132,8 +132,23 @@ class Dashboard_Admin extends CI_Controller {
 			'data_status' => $this->new_case->get_status(), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Admin - Initial Batching", $path, "Batching Case", "Initial Batching"),
+			"page" => $this->load("Dashboard Admin - Document Batching", $path, "Batching Case", "Document Batching"),
 			"content" =>$this->load->view('dashboardAdmin/initial-batching', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function doc_batching_detail()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Document Batching Detail", $path, "Batching Case", "Document Batching (Detail)"),
+			"content" =>$this->load->view('dashboardAdmin/doc-batching-detail', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -147,8 +162,23 @@ class Dashboard_Admin extends CI_Controller {
 			'data_status' => $this->new_case->get_status(), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Admin - Batching Case", $path, "Batching Case", "Proceed Status"),
+			"page" => $this->load("Dashboard Admin - OBV Batching", $path, "Batching Case", "OBV Batching"),
 			"content" =>$this->load->view('dashboardAdmin/batching-case', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function batching_case_detail()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("Dashboard Admin - OBV Batching Detail", $path, "Batching Case", "OBV Batching (Detail)"),
+			"content" =>$this->load->view('dashboardAdmin/batching-case-detail', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -164,6 +194,21 @@ class Dashboard_Admin extends CI_Controller {
 		$data = array(
 			"page" => $this->load("Dashboard Admin - Generate CPV", $path, "Batching Case", "Generate CPV"),
 			"content" =>$this->load->view('dashboardAdmin/payment-batch', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function payment_batch_detail()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Payment Batching Detail", $path, "Batching Case", "Payment  Batching (Detail)"),
+			"content" =>$this->load->view('dashboardAdmin/payment-batch-detail', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
