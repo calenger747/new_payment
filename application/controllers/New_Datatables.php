@@ -103,7 +103,7 @@ class New_Datatables extends CI_Controller {
 
 			$data[] = array(
 				'button' 			=> '<center>
-				<a href="'.base_url().$user.'/doc_batching_detail?batch_id='.$case->batch_id.'" class="detail" title="Show Detail Batching">
+				<a href="'.base_url().$user.'/doc_batching_detail?batch_id='.$case->batch_id.'&case_type='.$case->case_type.'" class="detail" title="Show Detail Batching">
 				<button class="btn btn-sm btn-primary"><i class="mdi mdi-view-list"></i></button>
 				</a>
 				</center>',
@@ -169,6 +169,7 @@ class New_Datatables extends CI_Controller {
 				"admission_date" 	=> htmlspecialchars_decode(htmlentities(date('d/m/Y', strtotime($case->admission_date)))),
 				"discharge_date" 	=> htmlspecialchars_decode(htmlentities(date('d/m/Y H:i:s', strtotime($case->discharge_date)))),
 				"account_no" 	=> htmlspecialchars_decode(htmlentities($case->account_no_client)),
+				"fup_id" 		=> htmlspecialchars_decode(htmlentities($case->fup_id)),
 			);
 		}
 
@@ -216,7 +217,7 @@ class New_Datatables extends CI_Controller {
 
 			$data[] = array(
 				'button' 			=> '<center>
-				<a href="'.base_url().$user.'/batching_case_detail?batch_id='.$case->batch_id.'" class="detail" title="Show Detail Batching">
+				<a href="'.base_url().$user.'/batching_case_detail?batch_id='.$case->batch_id.'&case_type='.$case->case_type.'" class="detail" title="Show Detail Batching">
 				<button class="btn btn-sm btn-primary"><i class="mdi mdi-view-list"></i></button>
 				</a>
 				</center>',
@@ -329,7 +330,7 @@ class New_Datatables extends CI_Controller {
 
 			$data[] = array(
 				'button' 			=> '<center>
-				<a href="'.base_url().$user.'/payment_batch_detail?batch_id='.$case->batch_id.'" class="detail" title="Show Detail Batching">
+				<a href="'.base_url().$user.'/payment_batch_detail?batch_id='.$case->batch_id.'&case_type='.$case->case_type.'" class="detail" title="Show Detail Batching">
 				<button class="btn btn-sm btn-primary"><i class="mdi mdi-view-list"></i></button>
 				</a>
 				</center>',
@@ -397,6 +398,7 @@ class New_Datatables extends CI_Controller {
 				"account_no_client" => htmlspecialchars_decode(htmlentities($case->account_no_client)),
 				"account_no_member" => htmlspecialchars_decode(htmlentities($case->account_no_member)),
 				"account_provider" 	=> htmlspecialchars_decode(htmlentities($case->account_no_provider)),
+				"cpv_id" 	=> htmlspecialchars_decode(htmlentities($case->cpv_id)),
 			);
 		}
 

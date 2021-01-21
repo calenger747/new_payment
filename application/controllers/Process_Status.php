@@ -570,8 +570,10 @@ class Process_Status extends CI_Controller {
 			$output = array();
 
 			$case_id = $this->input->post('checkbox_value');
+			$batch_id = $this->input->post('batch_id');
 			$client = $this->input->post('client');
 			$case_type = $this->input->post('case_type');
+			$status_batch = $this->input->post('status_batch');
 
 			$data_x = array();
 			for($count = 0; $count < count($case_id); $count++)
@@ -597,15 +599,17 @@ class Process_Status extends CI_Controller {
 				for($count = 0; $count < count($case_id); $count++)
 				{
 					$data1 = array(
-						'status_batch'	=> '2',
+						'status_batch'	=> '22',
 						'send_back_id'	=> $send_back_id,
 						'edited_by'		=> $user,
 						'edit_date'		=> date("Y-m-d H:i:s"), 
 					);
-					$cek_case = $this->new_case->cek_case_batch($case_id[$count], '1')->row();
-					$history_id = $cek_case->id;
+					// $cek_case = $this->new_case->cek_case_batch($case_id[$count], '11')->row();
+					// $history_id = $cek_case->id;
 
-					$this->db->where('id', $history_id);
+					$this->db->where('history_id', $batch_id);
+					$this->db->where('case_id', $case_id[$count]);
+					$this->db->where('status_batch', $status_batch);
 					$update = $this->db->update('new_history_batch_detail', $data1);
 
 					$data2 = array(

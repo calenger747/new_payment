@@ -25,8 +25,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $http = 'http' . ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 's' : '') . '://';
 $newurl = str_replace("index.php","", $_SERVER['SCRIPT_NAME']);
-$port = "";
-// $port = ":8080";
+// $port = "";
+$port = ":8080";
 $config['base_url'] = "$http" . $_SERVER['SERVER_NAME'] . "". $port . $newurl;
 
 // $config['base_url'] = "http://localhost:8080/payment";

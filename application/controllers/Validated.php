@@ -309,4 +309,25 @@ class Validated extends CI_Controller {
 
 		echo $this->new_case->get_client_fup($case_type, $user);
 	}
+
+	// REVISION
+	// GET CLIENT DOC BATCHING
+	public function get_client_doc_batching()
+	{
+		$case_type = $this->input->post('case_type');
+		$batch_id = $this->input->post('batch_id');
+		$user = '';
+
+		echo $this->new_case->get_client_doc_batching($batch_id, $case_type, $user);
+	}
+
+	public function get_status_batch_doc_batching()
+	{
+		$case_type = $this->input->post('case_type');
+		$batch_id = $this->input->post('batch_id');
+		$client = $this->input->post('client');
+		$user = '';
+
+		echo $this->new_case->get_status_batch_doc_batching($batch_id, $case_type, $client, $user);
+	}
 }

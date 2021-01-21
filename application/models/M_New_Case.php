@@ -80,6 +80,84 @@ class M_New_Case extends CI_Model{
     	$this->load->database();
     }
 
+    // REVISION
+    // GET CLIENT DOC BATCHING
+    public function get_client_doc_batching($batch_id, $case_type="", $user="")
+    {
+        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}'";
+
+        if (!empty($case_type)) {
+            $where .= " AND `case`.`type` ='{$case_type}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        $sql = "SELECT
+        client.id AS client_id,
+        client.full_name AS client_name
+        FROM
+        client
+        JOIN `case` ON `case`.client = client.id
+        JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+        ".$where.
+        "GROUP BY client.id
+        ORDER BY client.full_name ASC";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Client --</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->client_id.'">'.$row->client_name.'</option>';
+        }
+        return $output;
+    }
+
+    // GET CLIENT DOC BATCHING
+    public function get_status_batch_doc_batching($batch_id, $case_type="", $client="", $user="")
+    {
+        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}'";
+
+        if (!empty($case_type)) {
+            $where .= " AND `case`.`type` ='{$case_type}'";
+        }
+
+        if (!empty($client)) {
+            $where .= " AND `client`.`id` ='{$client}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        $sql = "SELECT
+        new_history_batch_detail.status_batch AS status_batch
+        FROM
+        client
+        JOIN `case` ON `case`.client = client.id
+        JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+        ".$where.
+        "GROUP BY new_history_batch_detail.status_batch
+        ORDER BY new_history_batch_detail.status_batch ASC";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Batch Status --</option>';
+        foreach($prepared->result() as $row)
+        {
+            if ($row->status_batch == '11') {
+                $status_batch = 'Batching';
+            } else if ($row->status_batch == '22') {
+                $status_batch = 'Follow up Payment (Excel) Release';
+            }
+            $output .= '<option value="'.$row->status_batch.'">'.$status_batch.'</option>';
+        }
+        return $output;
+    }
+    // END OF REVISION
+
     public function cek_case_rebatch($case_id, $status_batch)
     {
     	$query = $this->db->query("SELECT * FROM new_history_batch_detail WHERE case_id IN('$case_id') AND status_batch ='$status_batch'");
@@ -2039,7 +2117,7 @@ class M_New_Case extends CI_Model{
         }
 
         // $this->db->where('case_status.`status` = "'.$this->input->post('status').'"');
-        $this->db->where('new_history_batch_detail.status_batch IN ("11")');
+        $this->db->where('new_history_batch_detail.status_batch IN ("11","22")');
 
         $this->db->from($this->table_7);
         $this->db->join($this->table_7_2, $this->table_7.'.id ='.$this->table_7_2.'.history_id');
@@ -2136,7 +2214,7 @@ class M_New_Case extends CI_Model{
         }
 
         // $this->db->where('case_status.`status` = "'.$this->input->post('status').'"');
-        $this->db->where('new_history_batch_detail.status_batch IN ("11")');
+        $this->db->where('new_history_batch_detail.status_batch IN ("11","22")');
         $this->db->from($this->table_7);
         $this->db->join($this->table_7_2, $this->table_7.'.id ='.$this->table_7_2.'.history_id');
         $this->db->join($this->table_7_3, $this->table_7_2.'.case_id ='.$this->table_7_3.'.id');
@@ -2173,7 +2251,8 @@ class M_New_Case extends CI_Model{
             `case`.discharge_date AS discharge_date,
             client.account_no AS account_no_client,
             member.account_no AS account_no_member,
-            provider.account_no AS account_no_provider"
+            provider.account_no AS account_no_provider,
+            new_history_batch_detail.send_back_id AS fup_id"
         );
         if ($this->input->post('tgl_batch')) {
             $this->db->where('new_history_batch.tanggal_batch ="'.$this->input->post('tgl_batch').'"');
@@ -2201,7 +2280,7 @@ class M_New_Case extends CI_Model{
         }
 
         $this->db->where('new_history_batch.id = "'.$batch_id.'"');
-        $this->db->where('new_history_batch_detail.status_batch IN ("11")');
+        $this->db->where('new_history_batch_detail.status_batch IN ("11","22")');
 
         $this->db->from($this->table_1);
         $this->db->join($this->table_1_2, $this->table_1.'.status ='.$this->table_1_2.'.status');
@@ -2292,7 +2371,8 @@ class M_New_Case extends CI_Model{
             `case`.discharge_date AS discharge_date,
             client.account_no AS account_no_client,
             member.account_no AS account_no_member,
-            provider.account_no AS account_no_provider"
+            provider.account_no AS account_no_provider,
+            new_history_batch_detail.send_back_id AS fup_id"
         );
         if ($this->input->post('tgl_batch')) {
             $this->db->where('new_history_batch.tanggal_batch ="'.$this->input->post('tgl_batch').'"');
@@ -2320,7 +2400,7 @@ class M_New_Case extends CI_Model{
         }
 
         $this->db->where('new_history_batch.id = "'.$batch_id.'"');
-        $this->db->where('new_history_batch_detail.status_batch IN ("11")');
+        $this->db->where('new_history_batch_detail.status_batch IN ("11","22")');
 
         $this->db->from($this->table_1);
         $this->db->join($this->table_1_2, $this->table_1.'.status ='.$this->table_1_2.'.status');
@@ -2850,7 +2930,8 @@ class M_New_Case extends CI_Model{
             `case`.discharge_date AS discharge_date,
             client.account_no AS account_no_client,
             member.account_no AS account_no_member,
-            provider.account_no AS account_no_provider"
+            provider.account_no AS account_no_provider,
+            new_history_batch_detail.cpv_id AS cpv_id"
         );
     	// if ($this->input->post('payment_by')) {
     	// 	$this->db->where('program.claim_paid_by ="'.$this->input->post('payment_by').'"');
@@ -3056,7 +3137,8 @@ class M_New_Case extends CI_Model{
             `case`.discharge_date AS discharge_date,
             client.account_no AS account_no_client,
             member.account_no AS account_no_member,
-            provider.account_no AS account_no_provider"
+            provider.account_no AS account_no_provider,
+            new_history_batch_detail.cpv_id AS cpv_id"
         );
         // if ($this->input->post('payment_by')) {
         //  $this->db->where('program.claim_paid_by ="'.$this->input->post('payment_by').'"');
