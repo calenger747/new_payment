@@ -84,7 +84,7 @@ class M_New_Case extends CI_Model{
     // GET CLIENT DOC BATCHING
     public function get_client_doc_batching($batch_id, $case_type="", $user="")
     {
-        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}'";
+        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}' AND new_history_batch_detail.status_batch IN ('11','22')";
 
         if (!empty($case_type)) {
             $where .= " AND `case`.`type` ='{$case_type}'";
@@ -118,7 +118,7 @@ class M_New_Case extends CI_Model{
     // GET CLIENT DOC BATCHING
     public function get_status_batch_doc_batching($batch_id, $case_type="", $client="", $user="")
     {
-        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}'";
+        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}' AND new_history_batch_detail.status_batch IN ('11','22')";
 
         if (!empty($case_type)) {
             $where .= " AND `case`.`type` ='{$case_type}'";
@@ -153,6 +153,39 @@ class M_New_Case extends CI_Model{
                 $status_batch = 'Follow up Payment (Excel) Release';
             }
             $output .= '<option value="'.$row->status_batch.'">'.$status_batch.'</option>';
+        }
+        return $output;
+    }
+
+    public function get_client_obv_batching($batch_id, $case_type="", $user="")
+    {
+        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}' AND new_history_batch_detail.status_batch IN ('1')";
+
+        if (!empty($case_type)) {
+            $where .= " AND `case`.`type` ='{$case_type}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        $sql = "SELECT
+        client.id AS client_id,
+        client.full_name AS client_name
+        FROM
+        client
+        JOIN `case` ON `case`.client = client.id
+        JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+        ".$where.
+        "GROUP BY client.id
+        ORDER BY client.full_name ASC";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Client --</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->client_id.'">'.$row->client_name.'</option>';
         }
         return $output;
     }

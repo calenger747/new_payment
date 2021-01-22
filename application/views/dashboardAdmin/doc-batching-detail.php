@@ -281,10 +281,10 @@
       },
       ],
       "rowCallback": function( row, data, index ) {
-        if (data.fup_id  || data.fup_id != "") {
+        if (data.fup_id != "") {
           $('td', row).css('background-color', '#3acf63');
           $('td', row).css('color', 'white');
-          console.log(data.fup_id);
+          // console.log(data.fup_id);
         }
       },
     });
@@ -375,6 +375,9 @@
       var status_batch = $("#status_batch").val();
       var action = $("#action").val();
 
+      var send_date = $("#send").val();
+      var receive_date = $("#receive").val();
+
       if (action == '1') {
         var checkbox = $('.check:checked');
         if(checkbox.length > 0) {
@@ -443,7 +446,83 @@
           });
         }
       } else if (action == '2') {
+        if (send == '') {
+          swal({
+            title: "Error!",
+            icon: "error",
+            text: "Please Input Send Back to Client Date",
+            buttons: "Close",
+          });
+        } else {
+          var checkbox = $('.check:checked');
+          if(checkbox.length > 0) {
+            var checkbox_value = [];
+            $(checkbox).each(function(){
+              checkbox_value.push($(this).val());
+            });
 
+            swal({
+              title: "Proceed Status Case?",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            }).then((result) => {
+              if (result) {
+                $.ajax({
+                  url:"<?php echo base_url(); ?>Process_Status/send_back",
+                  method:"POST",
+                  datatype:"json",
+                  data:{
+                    checkbox_value:checkbox_value,
+                    batch_id:batch_id,
+                    client:client,
+                    case_type:case_type,
+                    status_batch:status_batch,
+                    send_date:send_date,
+                    receive_date:receive_date,
+                  },
+                  beforeSend :function() {
+                    swal({
+                      title: 'Please Wait',
+                      content: 'Batching data',
+                      onOpen: () => {
+                        swal.showLoading()
+                      }
+                    })      
+                  },
+                  success:function(data){
+                    var json = $.parseJSON(data);
+                    if (json.success == true) {
+                      swal({
+                        title: "Success!",
+                        icon: "success",
+                        text: json.message,
+                        buttons: "Close",
+                      });
+                      table.ajax.reload();
+                      $("#checkbox1").prop("checked",false);
+                    } else {
+                      swal({
+                        title: "Failed!",
+                        icon: "error",
+                        text: json.message,
+                        buttons: "Close",
+                      });
+                      $("#checkbox1").prop("checked",false);
+                    }
+                  }
+                });
+              }
+            })
+          } else {
+            swal({
+              title: "Error!",
+              icon: "error",
+              text: "Select atleast one records",
+              buttons: "Close",
+            });
+          }
+        }
       } else {
         swal({
           title: "Error!",

@@ -764,4 +764,84 @@ class Process_Status extends CI_Controller {
 			echo json_encode($output);
 		}
 	}
+
+	// Proceed Status Doc Batching
+	public function send_back()
+	{
+		if($this->input->post('checkbox_value'))
+		{
+			$output = array();
+
+			date_default_timezone_set('Asia/Jakarta');
+
+			$case_id = $this->input->post('checkbox_value');
+			$batch_id = $this->input->post('batch_id');
+			$client = $this->input->post('client');
+			$case_type = $this->input->post('case_type');
+			$status_batch1 = $this->input->post('status_batch');
+
+			$send_date = date('Y-m-d', strtotime($this->input->post('send_date')));
+			if (empty($this->input->post('receive_date'))) {
+				$receive_date = null;
+			} else {
+				$receive_date = date('Y-m-d', strtotime($this->input->post('receive_date')));
+			}
+
+			$user = $this->session->userdata('username');
+
+			for($count = 0; $count < count($case_id); $count++)
+			{	
+				$data = array(
+					'doc_send_back_to_client_date' => $send_date,
+					'doc_received_by_client_date' => $receive_date,
+					'edited_by' => $user,
+					'edit_date' => date("Y-m-d H:i:s"),
+				);
+
+				$this->db->where('id', $case_id[$count]);
+				$update = $this->db->update('`case`', $data);
+
+				$cek_case_status = $this->new_case->cek_case_status($case_id[$count]);
+				if ($cek_case_status->status == '17' || $cek_case_status->status == '18' || $cek_case_status->status == '28' || $cek_case_status->status == '29') {
+					$status_batch = '11';
+				} else if ($cek_case_status->status == '15' || $cek_case_status->status == '26') {
+					$status_batch = '1';
+				} else if ($cek_case_status->status == '16' || $cek_case_status->status == '27') {
+					$status_batch = '3';
+				} else if ($cek_case_status->status == '30') {
+					$status_batch = '30';
+				} else {
+					$status_batch = $status_batch1;
+				}
+
+				$data1 = array(
+					'status_batch'	=> $status_batch,
+					'edited_by' => $user,
+					'edit_date' => date("Y-m-d H:i:s"),
+				);
+				$this->db->where('history_id', $batch_id);
+				$this->db->where('case_id', $case_id[$count]);
+				$this->db->where('status_batch', $status_batch1);
+				$update = $this->db->update('new_history_batch_detail', $data1);
+
+				$data2 = array(
+					'log_detail' 	=> 'Update Status Case "'.$case_id[$count],
+					'type_log' 		=> 'Change Status',
+					'username'		=> $user,
+				);
+				$this->db->insert('log_activity_pg', $data2);
+
+			}
+
+			if ($update == TRUE) {
+				$output['success'] = true;
+				$output['message'] = "Proceed Status Successfully";
+			} else {
+				$output['success'] = false;
+				$output['message'] = 'Proceed Status Failed';
+			}
+
+			echo json_encode($output);
+		}
+	}
 }
