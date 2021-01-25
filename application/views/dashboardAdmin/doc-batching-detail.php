@@ -436,6 +436,9 @@
                 }
               });
             }
+            table.ajax.reload();
+            $('#client').html('<option value="">-- Select Client --</option>');
+            $('#status_batch').html('<option value="">-- Select Batch Status --</option>');
           })
         } else {
           swal({
@@ -513,6 +516,9 @@
                   }
                 });
               }
+              table.ajax.reload();
+              $('#client').html('<option value="">-- Select Client --</option>');
+              $('#status_batch').html('<option value="">-- Select Batch Status --</option>');
             })
           } else {
             swal({

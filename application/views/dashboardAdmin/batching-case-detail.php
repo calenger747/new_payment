@@ -7,65 +7,29 @@
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
-            <label>Case Type <span style="color: red;">*</span></label>
-            <select id="type" class="form-control">
-              <option value="2">Cashless</option>
-              <option value="1">Reimbursement</option>
-              <option value="3">Non-LOG</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Case Status <span style="color: red;">*</span></label>
-            <select id="case_status" class="form-control">
-              <option value="" hidden="">-- Select Status --</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Date of Batch</label>
-            <select id="tgl_batch" class="form-control" name="tgl_batch">
-              <option value="">-- Select Date --</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>History</label>
-            <select id="history_batch" class="form-control" name="history_batch">
-              <option value="">-- Select History --</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Batch Status <span style="color: red;">*</span></label>
-            <select id="status_batch" name="status_batch" class="form-control">
-              <option value="">-- Select Batch Status --</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group">
             <label>Client <span style="color: red;">*</span></label>
             <select id="client" name="client_name" class="form-control" required="">
               <option value="">-- Select Client --</option>
             </select>
           </div>
         </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Batch Status <span style="color: red;">*</span></label>
+            <input type="hidden" name="status_batch" id="status_batch" class="form-control" readonly="">
+            <input type="text" name="batch_status" id="batch_status" class="form-control" readonly="">
+            <!-- <select id="status_batch" name="status_batch" class="form-control">
+              <option value="">-- Select Batch Status --</option>
+            </select> -->
+          </div>
+        </div>
       </div>
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
-            <label>Plan Benefit</label>
-            <select id="plan" name="plan" class="form-control" required="">
-              <option value="">-- Select Plan Benefit --</option>
+            <label>Action <span style="color: red;">*</span></label>
+            <select id="action" class="form-control" name="action" required="">
+              <option value="" hidden="">-- Select Action --</option>
             </select>
           </div>
         </div>
@@ -102,13 +66,33 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" id="ob-verification">
+        <div class="col-md-6">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Discount</label>
+                <input type="text" name="discount" id="discount" class="form-control">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>OB Verification <span style="color: red;">*</span></label>
+                <select id="obv" name="obv" class="form-control" required="">
+                  <option value="" hidden="">-- Select OB Verification --</option>
+                  <option value="1">Pending</option>
+                  <option value="2">Original Bill Not Complete</option>
+                  <option value="3">WS Revision</option>
+                  <option value="4">OK</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="col-md-6">
           <div class="form-group">
-            <label>Action <span style="color: red;">*</span></label>
-            <select id="action" class="form-control" name="action" required="">
-              <option value="" hidden="">-- Select Action --</option>
-            </select>
+            <label>Remarks</label>
+            <input type="text" name="obv-remarks" id="obv-remarks" class="form-control">
           </div>
         </div>
       </div>
@@ -136,33 +120,6 @@
           </div>
         </div>
       </div>
-      <div class="row" id="obv">
-        <div class="col-md-12">
-          <div class="form-group">
-            <label>Remarks <span style="color: red;">*</span></label>
-            <input type="text" name="remarks" id="remarks" class="form-control">
-          </div>
-        </div>
-      </div>
-      <div class="row" id="payment">
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Payment Date <span style="color: red;">*</span></label>
-            <div class="input-group">
-              <input type="text" class="form-control" id="datepicker-autoclose3" placeholder="mm/dd/yyyy">
-              <div class="input-group-append">
-                <span class="input-group-text"><i class="icon-calender"></i></span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Upload Proof of Payment <span style="color: red;">*</span></label>
-            <input type="file" name="file" class="form-control document" id="file" multiple="multiple">
-          </div>
-        </div>
-      </div>
       <div class="row">
         <div class="col-md-12">
           <div class="form-group">
@@ -185,6 +142,7 @@
     <div class="card-body">
       <div class="table-responsive m-t-5">
         <input type="hidden" name="batch_id" id="batch_id" value="<?= $this->input->get('batch_id'); ?>">
+        <input type="hidden" name="case_type" id="case_type" value="<?= $this->input->get('case_type'); ?>">
         <table id="case" class="table table-bordered table-striped">
           <thead>
             <tr class="text-center">
@@ -256,8 +214,8 @@
           // data.status = $('#case_status').val();
           // data.tgl_batch = $('#tgl_batch').val();
           // data.history_batch = $('#history_batch').val();
-          // data.status_batch = $('#status_batch').val();
-          // data.client = $('#client').val();
+          data.status_batch = $('#status_batch').val();
+          data.client = $('#client').val();
           // data.plan = $('#plan').val();
           data.column = $('#column').val();
           data.order_by = $('#order_by').val();
@@ -298,434 +256,67 @@
     });
 
     $('#send_back').hide();
-    $('#obv').hide();
-    $('#payment').hide();
+    $('#ob-verification').hide();
     $('#action').prop("disabled", true);
     $('#btn-submit').prop("disabled", true);
 
-    $('#type').change(function(){
-      var case_type = $(this).val();
-      var case_status = $("#case_status").val();
-      var tgl_batch = $("#tgl_batch").val();
-      var history_batch = $("#history_batch").val();
-      var status_batch = $("#status_batch").val();
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_status",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-        },
-        success:function(data) {
-          $('#case_status').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_tanggal",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:'',
-        },
-        success:function(data) {
-          $('#tgl_batch').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_history",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          payment_by:'',
-        },
-        success:function(data) {
-          $('#history_batch').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_status_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-        },
-        success:function(data) {
-          $('#status_batch').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_client_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-          status_batch:status_batch,
-        },
-        success:function(data) {
-          $('#client').html(data);
-        }
-      });
-      table.ajax.reload();
-    });
-
     $('#client').show(function(){
-      var case_type = $('#type').val();
-      var case_status = $("#case_status").val();
-      var tgl_batch = $("#tgl_batch").val();
-      var history_batch = $("#history_batch").val();
-      var status_batch = $("#status_batch").val();
+      var batch_id = $("#batch_id").val();
+      var case_type = $("#case_type").val();
 
       $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_status",
+        url:"<?php echo base_url(); ?>Validated/get_client_obv_batching",
         method:"POST",
         data:{
+          batch_id:batch_id,
           case_type:case_type, 
-        },
-        success:function(data) {
-          $('#case_status').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_client_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-          status_batch:status_batch,
         },
         success:function(data) {
           $('#client').html(data);
         }
       });
       table.ajax.reload();
-    });
-
-    $('#case_status').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $(this).val();
-      var tgl_batch = $("#tgl_batch").val();
-      var history_batch = $("#history_batch").val();
-      var status_batch = $("#status_batch").val();
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_tanggal",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:'',
-        },
-        success:function(data) {
-          $('#tgl_batch').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_history",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          payment_by:'',
-        },
-        success:function(data) {
-          $('#history_batch').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_status_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-        },
-        success:function(data) {
-          $('#status_batch').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_client_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-          status_batch:'',
-        },
-        success:function(data) {
-          $('#client').html(data);
-        }
-      });
-
-      if (case_status == '16' || case_status == '27') {
-        $('#action').html(
-          '<option value="" hidden="">-- Select Action --</option>'
-          );
-        $('#action').prop("disabled", false);
-        $('#btn-submit').prop("disabled", false);
-      } else if (case_status == '15' || case_status == '26') {
-        $('#action').html(
-          '<option value="" hidden="">-- Select Action --</option>'+
-          // '<option value="1">Re-Batch</option>'+
-          '<option value="3">Proceed Status</option>'
-          );
-        $('#action').prop("disabled", false);
-        $('#btn-submit').prop("disabled", false);
-      } else if (case_status == '17' || case_status == '28') {
-        $('#action').html(
-          '<option value="" hidden="">-- Select Action --</option>'+
-          '<option value="4">Generate Follow Up Payment (Excel)</option>'
-          );
-        $('#action').prop("disabled", false);
-        $('#btn-submit').prop("disabled", false);
-      } else {
-        $('#action').html(
-          '<option value="" hidden="">-- Select Action --</option>'
-          );
-        $('#action').prop("disabled", true);
-        $('#btn-submit').prop("disabled", true);
-      }
-
-      var action = $('#action').val();
-
-      if (action == '3') {
-        if (case_status == '15' || case_status == '26') {
-          $('#obv').show();
-          $('#payment').hide();
-        } else if (case_status == '16' || case_status == '27') {
-          $('#obv').hide();
-          $('#payment').show();
-        } else {
-          $('#obv').hide();
-          $('#payment').hide();
-        }
-      } else {
-        $('#obv').hide();
-        $('#payment').hide();
-      }
-      table.ajax.reload();
-    });
-
-    $('#tgl_batch').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var tgl_batch = $(this).val();
-      var history_batch = $("#history_batch").val();
-      var status_batch = $("#status_batch").val();
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_history",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          payment_by:'',
-        },
-        success:function(data) {
-          $('#history_batch').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_status_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-        },
-        success:function(data) {
-          $('#status_batch').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_client_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-          status_batch:'',
-        },
-        success:function(data) {
-          $('#client').html(data);
-        }
-      });
-      table.ajax.reload();
-    });
-
-    $('#history_batch').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var tgl_batch = $("#tgl_batch").val();
-      var history_batch = $(this).val();
-      var status_batch = $("#status_batch").val();
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_status_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-        },
-        success:function(data) {
-          $('#status_batch').html(data);
-        }
-      });
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_client_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-          status_batch:status_batch,
-        },
-        success:function(data) {
-          $('#client').html(data);
-        }
-      });
-      table.ajax.reload();
-    });
-
-    $('#status_batch').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var tgl_batch = $("#tgl_batch").val();
-      var history_batch = $("#history_batch").val();
-      var status_batch = $(this).val();
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_client_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-          status_batch:status_batch,
-        },
-        success:function(data) {
-          $('#client').html(data);
-        }
-      });
-      table.ajax.reload();
-      if (case_status == '16' || case_status == '27') {
-        if (status_batch == '4') {
-          $('#action').html(
-            '<option value="" hidden="">-- Select Action --</option>'+
-            '<option value="3">Proceed Status</option>'
-            );
-          $('#action').prop("disabled", false);
-          $('#btn-submit').prop("disabled", false);
-        } else {
-          $('#action').html(
-            '<option value="" hidden="">-- Select Action --</option>'
-            );
-          $('#action').prop("disabled", true);
-          $('#btn-submit').prop("disabled", true);
-        }
-      } else if (case_status == '15' || case_status == '26') {
-        $('#action').html(
-          '<option value="" hidden="">-- Select Action --</option>'+
-          // '<option value="1">Re-Batch</option>'+
-          '<option value="3">Proceed Status</option>'
-          );
-        $('#action').prop("disabled", false);
-        $('#btn-submit').prop("disabled", false);
-      } else if (case_status == '17' || case_status == '28') {
-        if (status_batch == '4') {
-          $('#action').html(
-            '<option value="" hidden="">-- Select Action --</option>'+
-            '<option value="4">Generate Follow Up Payment (Excel)</option>'
-            );
-          $('#action').prop("disabled", false);
-          $('#btn-submit').prop("disabled", false);
-        } else {
-          $('#action').html(
-            '<option value="" hidden="">-- Select Action --</option>'
-            );
-          $('#action').prop("disabled", true);
-          $('#btn-submit').prop("disabled", true);
-        }
-      } else {
-        $('#action').html(
-          '<option value="" hidden="">-- Select Action --</option>'
-          );
-        $('#action').prop("disabled", true);
-        $('#btn-submit').prop("disabled", true);
-      }
     });
 
     $('#client').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var tgl_batch = $("#tgl_batch").val();
-      var history_batch = $("#history_batch").val();
-      var status_batch = $("#status_batch").val();
+      var batch_id = $("#batch_id").val();
+      var case_type = $("#case_type").val();
       var client = $("#client").val();
+      if (client == '') {
+        $("#status_batch").val('');
+        $("#batch_status").val('');
 
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/get_plan_benefit_3",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          tgl_batch:tgl_batch,
-          history_batch:history_batch,
-          payment_by:'',
-          status_batch:status_batch,
-          client:client,
-        },
-        success:function(data) {
-          $('#plan').html(data);
-        }
-      });
+        $('#action').html(
+          '<option value="" hidden="">-- Select Action --</option>' );
+        $('#action').prop("disabled", true);
+        $('#btn-submit').prop("disabled", true);
+
+        $('#ob-verification').hide();
+      } else {
+        $("#status_batch").val('1');
+        $("#batch_status").val('Batching');
+
+        $('#action').html(
+          '<option value="" hidden="">-- Select Action --</option>'+
+          '<option value="1">Proceed Status</option>'
+          );
+        $('#action').prop("disabled", false);
+        $('#btn-submit').prop("disabled", false);
+
+      }
       table.ajax.reload();
     });
 
-    $('#plan').change(function(){
-      table.ajax.reload();
-    });
+    $('#action').change(function(){
+      var action = $(this).val();
 
+      if (action == '1') {
+        $('#ob-verification').show();
+      } else {
+        $('#ob-verification').hide();
+      }
+    });
+    
     $('#column').change(function(){
       table.ajax.reload();
     });
@@ -755,27 +346,6 @@
       }
     });
 
-    $('#action').change(function(){
-      var action = $(this).val();
-      var case_status = $('#case_status').val();
-
-      if (action == '3') {
-        if (case_status == '15' || case_status == '26') {
-          $('#obv').show();
-          $('#payment').hide();
-        } else if (case_status == '16' || case_status == '27') {
-          $('#obv').hide();
-          $('#payment').show();
-        } else {
-          $('#obv').hide();
-          $('#payment').hide();
-        }
-      } else {
-        $('#obv').hide();
-        $('#payment').hide();
-      }
-    });
-
     $(".document").change(function() {
       if (this.files && this.files[0] && this.files[0].name.match(/\.(xlsx|jpg|jpeg|png|JPG|PNG|JPEG|docx|doc|xls|pdf)$/) ) {
         if(this.files[0].size>10485760) {
@@ -793,17 +363,102 @@
     });
 
     $('#btn-submit').click(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var tgl_batch = $("#tgl_batch").val();
-      var history_batch = $("#history_batch").val();
-      var status_batch = $('#status_batch').val();
-      var client = $('#client').val();
-      var action = $('#action').val();
+      var batch_id = $("#batch_id").val();
+      var case_type = $("#case_type").val();
+      var client = $("#client").val();
+      var status_batch = $("#status_batch").val();
 
-      var remarks_obv = $('#remarks').val();
-      var payment_date = $('#datepicker-autoclose3').val();
+      var discount = $("#discount").val();
+      var obv = $("#obv").val();
+      var remarks = $("#obv-remarks").val();
+      var action = $("#action").val();
 
+      if (action == '1') {
+        if (obv == '') {
+          swal({
+            title: "Error!",
+            icon: "error",
+            text: "Please Select an OB Verification",
+            buttons: "Close",
+          });
+        } else {
+          var checkbox = $('.check:checked');
+          if(checkbox.length > 0) {
+            var checkbox_value = [];
+            $(checkbox).each(function(){
+              checkbox_value.push($(this).val());
+            });
+            swal({
+              title: "Proceed Status Case?",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            }).then((result) => {
+              if (result) {
+                $.ajax({
+                  url:"<?php echo base_url(); ?>Process_Status/obv_proceed",
+                  method:"POST",
+                  datatype:"json",
+                  data:{
+                    checkbox_value:checkbox_value,
+                    batch_id:batch_id,
+                    client:client,
+                    case_type:case_type,
+                    status_batch:status_batch,
+                    discount:discount,
+                    obv:obv,
+                    remarks:remarks,
+                  },
+                  beforeSend :function() {
+                    swal({
+                      title: 'Please Wait',
+                      content: 'Batching data',
+                      onOpen: () => {
+                        swal.showLoading()
+                      }
+                    })      
+                  },
+                  success:function(data){
+                    var json = $.parseJSON(data);
+                    if (json.success == true) {
+                      swal({
+                        title: "Success!",
+                        icon: "success",
+                        text: json.message,
+                        buttons: "Close",
+                      });
+                      table.ajax.reload();
+                      $("#checkbox1").prop("checked",false);
+                    } else {
+                      swal({
+                        title: "Failed!",
+                        icon: "error",
+                        text: json.message,
+                        buttons: "Close",
+                      });
+                      $("#checkbox1").prop("checked",false);
+                    }
+                  }
+                });
+              }
+            })
+          } else {
+            swal({
+              title: "Error!",
+              icon: "error",
+              text: "Select atleast one records",
+              buttons: "Close",
+            });
+          }
+        }
+      } else {
+        swal({
+          title: "Error!",
+          icon: "error",
+          text: "Please Select The Action",
+          buttons: "Close",
+        });
+      }
       if (case_status == '16' || case_status == '27') {
         if(action == '3') {
           if (payment_date == '') {

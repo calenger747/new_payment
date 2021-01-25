@@ -330,4 +330,100 @@ class Validated extends CI_Controller {
 
 		echo $this->new_case->get_status_batch_doc_batching($batch_id, $case_type, $client, $user);
 	}
+
+	public function get_client_obv_batching()
+	{
+		$case_type = $this->input->post('case_type');
+		$batch_id = $this->input->post('batch_id');
+		$user = '';
+
+		echo $this->new_case->get_client_obv_batching($batch_id, $case_type, $user);
+	}
+
+	public function get_client_pp_batching()
+	{
+		$case_type = $this->input->post('case_type');
+		$batch_id = $this->input->post('batch_id');
+		$user = '';
+
+		echo $this->new_case->get_client_pp_batching($batch_id, $case_type, $user);
+	}
+
+	public function get_status_batch_pp_batching()
+	{
+		$case_type = $this->input->post('case_type');
+		$batch_id = $this->input->post('batch_id');
+		$client = $this->input->post('client');
+		$user = '';
+
+		echo $this->new_case->get_status_batch_pp_batching($batch_id, $case_type, $client, $user);
+	}
+
+	public function get_source_account_pp_batching()
+	{
+		$case_type = $this->input->post('case_type');
+		$batch_id = $this->input->post('batch_id');
+		$client = $this->input->post('client');
+		$status_batch = $this->input->post('status_batch');
+		$user = '';
+
+		$row = $this->new_case->get_source_account_pp_batching($batch_id, $case_type, $client, $status_batch, $user)->row();
+		// if ($source->num_rows() < 1) {
+		// 	$source_account = '1';
+		// } else {
+		// 	$source_account = '0';
+		// }
+		if (empty($row->bank_id)) {
+			$source_bank = 'No';
+			$s_bank = 'No Source Bank';
+		} else {
+			$source_bank = $row->bank_id;
+			$s_bank = $row->source_bank;
+		}
+
+		if (empty($row->source_account)) {
+			$source_account = 'No';
+			$s_account = 'No Source Account';
+		} else {
+			$source_account = $row->source_account;
+			$s_account = preg_replace('/[^0-9.]/', '',$row->source_account);
+		}
+
+		$output = array();
+
+		$output['status'] = 200;
+		$output['source_bank'] = $source_bank;
+		$output['s_bank'] = $s_bank;
+		$output['source_account'] = $source_account;
+		$output['s_account'] = $s_account;
+
+		echo json_encode($output);
+	}
+
+	public function get_beneficiary_bank_pp_batching()
+	{
+		$case_type = $this->input->post('case_type');
+		$batch_id = $this->input->post('batch_id');
+		$client = $this->input->post('client');
+		$status_batch = $this->input->post('status_batch');
+		$source_bank = $this->input->post('source_bank');
+		$source_account = $this->input->post('source_account');
+		$user = '';
+
+		echo $this->new_case->get_beneficiary_bank_pp_batching($batch_id, $case_type, $client, $status_batch, $source_bank, $source_account, $user);
+	}
+
+	public function get_beneficiary_account_pp_batching()
+	{
+		$case_type = $this->input->post('case_type');
+		$batch_id = $this->input->post('batch_id');
+		$client = $this->input->post('client');
+		$status_batch = $this->input->post('status_batch');
+		$source_bank = $this->input->post('source_bank');
+		$source_account = $this->input->post('source_account');
+		$beneficiary_bank = $this->input->post('beneficiary_bank');
+		$user = '';
+
+		echo $this->new_case->get_beneficiary_account_pp_batching($batch_id, $case_type, $client, $status_batch, $source_bank, $source_account, $beneficiary_bank, $user);
+	}
 }

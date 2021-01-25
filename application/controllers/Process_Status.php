@@ -293,10 +293,9 @@ class Process_Status extends CI_Controller {
 		{
 			$output = array();
 			$case_id = $this->input->post('checkbox_value');
+			$batch_id = $this->input->post('batch_id');
 			$case_type = $this->input->post('case_type');
 
-			$case_status = $this->input->post('case_status');
-			$payment_by = $this->input->post('payment_by');
 			$source_bank = $this->input->post('source_bank');
 			$source_account = $this->input->post('source_account');
 			$beneficiary_bank = $this->input->post('beneficiary_bank');
@@ -348,10 +347,12 @@ class Process_Status extends CI_Controller {
 						'edited_by'		=> $user,
 						'edit_date'		=> date("Y-m-d H:i:s"), 
 					);
-					$cek_case = $this->new_case->cek_case_rebatch($case_id[$count], '1')->row();
-					$history_id = $cek_case->id;
+					// $cek_case = $this->new_case->cek_case_rebatch($case_id[$count], '3')->row();
+					// $history_id = $cek_case->id;
 
-					$this->db->where('id', $history_id);
+					$this->db->where('history_id', $batch_id);
+					$this->db->where('case_id', $case_id[$count]);
+					$this->db->where('status_batch', $status_batch);
 					$update = $this->db->update('new_history_batch_detail', $data1);
 
 					$data2 = array(
@@ -517,46 +518,83 @@ class Process_Status extends CI_Controller {
 		echo json_encode($output);
 	}
 
-	public function tes2()
+	public function obv_proceed()
 	{
-		$output = array();
-
-		date_default_timezone_set('Asia/Jakarta');
-
-		$case_id = explode(",", $this->input->get('case_id'));
-		$remarks = str_replace("%20"," ", $this->input->get('remarks'));
-		$user = $this->session->userdata('username');
-
-		for($count = 0; $count < count($case_id); $count++)
+		if($this->input->post('checkbox_value'))
 		{
-			$data = array(
-				'original_bill_verified' => '4',
-				'original_bill_verified_remarks' => $remarks,
-				'edited_by' => $user,
-				'edit_date' => date("Y-m-d H:i:s"),
-			);
+			$output = array();
 
-			$this->db->where('id', $case_id[$count]);
-			$update = $this->db->update('`case`', $data);
+			date_default_timezone_set('Asia/Jakarta');
 
-			$data2 = array(
-				'log_detail' 	=> 'Update Status Case "'.$case_id[$count],
-				'type_log' 		=> 'Change Status',
-				'username'		=> $user,
-			);
-			$this->db->insert('log_activity_pg', $data2);
+			$case_id = $this->input->post('checkbox_value');
+			$batch_id = $this->input->post('batch_id');
+			$client = $this->input->post('client');
+			$case_type = $this->input->post('case_type');
+			$status_batch1 = $this->input->post('status_batch');
 
+			$discount = $this->input->post('discount');
+			$obv = $this->input->post('obv');
+			$remarks = $this->input->post('remarks');
+
+			$user = $this->session->userdata('username');
+
+			for($count = 0; $count < count($case_id); $count++)
+			{	
+				$data = array(
+					'discount' => $discount,
+					'original_bill_verified' => $obv,
+					'original_bill_verified_remarks' => $remarks,
+					'original_bill_verified_by' => $user,
+					'original_bill_verified_date' => date("Y-m-d H:i:s"),
+					'edited_by' => $user,
+					'edit_date' => date("Y-m-d H:i:s"),
+				);
+
+				$this->db->where('id', $case_id[$count]);
+				$update = $this->db->update('`case`', $data);
+
+				$cek_case_status = $this->new_case->cek_case_status($case_id[$count]);
+				if ($cek_case_status->status == '17' || $cek_case_status->status == '18' || $cek_case_status->status == '28' || $cek_case_status->status == '29') {
+					$status_batch = '11';
+				} else if ($cek_case_status->status == '15' || $cek_case_status->status == '26') {
+					$status_batch = $status_batch1;
+				} else if ($cek_case_status->status == '16' || $cek_case_status->status == '27') {
+					$status_batch = '3';
+				} else if ($cek_case_status->status == '30') {
+					$status_batch = '30';
+				} else {
+					$status_batch = $status_batch1;
+				}
+
+				$data1 = array(
+					'status_batch'	=> $status_batch,
+					'edited_by' => $user,
+					'edit_date' => date("Y-m-d H:i:s"),
+				);
+				$this->db->where('history_id', $batch_id);
+				$this->db->where('case_id', $case_id[$count]);
+				$this->db->where('status_batch', $status_batch1);
+				$update = $this->db->update('new_history_batch_detail', $data1);
+
+				$data2 = array(
+					'log_detail' 	=> 'Update Status Case "'.$case_id[$count],
+					'type_log' 		=> 'Change Status',
+					'username'		=> $user,
+				);
+				$this->db->insert('log_activity_pg', $data2);
+
+			}
+
+			if ($update == TRUE) {
+				$output['success'] = true;
+				$output['message'] = "Proceed Status Successfully";
+			} else {
+				$output['success'] = false;
+				$output['message'] = 'Proceed Status Failed';
+			}
+
+			echo json_encode($output);
 		}
-
-		if ($update == TRUE) {
-			$output['success'] = true;
-			$output['message'] = "Proceed Status Successfully";
-		} else {
-			$output['success'] = false;
-			$output['message'] = 'Proceed Status Failed';
-		}
-
-		echo json_encode($output);
 
 	}
 
@@ -768,6 +806,8 @@ class Process_Status extends CI_Controller {
 	// Proceed Status Doc Batching
 	public function send_back()
 	{
+		set_time_limit(0); 
+
 		if($this->input->post('checkbox_value'))
 		{
 			$output = array();
@@ -803,7 +843,7 @@ class Process_Status extends CI_Controller {
 
 				$cek_case_status = $this->new_case->cek_case_status($case_id[$count]);
 				if ($cek_case_status->status == '17' || $cek_case_status->status == '18' || $cek_case_status->status == '28' || $cek_case_status->status == '29') {
-					$status_batch = '11';
+					$status_batch = $status_batch1;
 				} else if ($cek_case_status->status == '15' || $cek_case_status->status == '26') {
 					$status_batch = '1';
 				} else if ($cek_case_status->status == '16' || $cek_case_status->status == '27') {

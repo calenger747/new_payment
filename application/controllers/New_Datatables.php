@@ -99,7 +99,7 @@ class New_Datatables extends CI_Controller {
 
 			$client_name = preg_replace('/(,)(?=[^\s])/', ', ', $case->client);
 
-			$count = $this->new_case->record_batching($case->batch_id);
+			$count = $this->new_case->record_batching($case->batch_id, "11','22");
 
 			$data[] = array(
 				'button' 			=> '<center>
@@ -213,7 +213,7 @@ class New_Datatables extends CI_Controller {
 
 			$client_name = preg_replace('/(,)(?=[^\s])/', ', ', $case->client);
 
-			$count = $this->new_case->record_batching($case->batch_id);
+			$count = $this->new_case->record_batching($case->batch_id, "1");
 
 			$data[] = array(
 				'button' 			=> '<center>
@@ -326,7 +326,7 @@ class New_Datatables extends CI_Controller {
 
 			$client_name = preg_replace('/(,)(?=[^\s])/', ', ', $case->client);
 
-			$count = $this->new_case->record_batching($case->batch_id);
+			$count = $this->new_case->record_batching($case->batch_id, "3','4','99");
 
 			$data[] = array(
 				'button' 			=> '<center>

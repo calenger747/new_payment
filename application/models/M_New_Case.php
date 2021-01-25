@@ -115,7 +115,7 @@ class M_New_Case extends CI_Model{
         return $output;
     }
 
-    // GET CLIENT DOC BATCHING
+    // GET STATUS BATCH DOC BATCHING
     public function get_status_batch_doc_batching($batch_id, $case_type="", $client="", $user="")
     {
         $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}' AND new_history_batch_detail.status_batch IN ('11','22')";
@@ -157,6 +157,7 @@ class M_New_Case extends CI_Model{
         return $output;
     }
 
+    // GET CLIENT OBV BATCH
     public function get_client_obv_batching($batch_id, $case_type="", $user="")
     {
         $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}' AND new_history_batch_detail.status_batch IN ('1')";
@@ -186,6 +187,304 @@ class M_New_Case extends CI_Model{
         foreach($prepared->result() as $row)
         {
             $output .= '<option value="'.$row->client_id.'">'.$row->client_name.'</option>';
+        }
+        return $output;
+    }
+
+    // GET CLIENT PP BATCH
+    public function get_client_pp_batching($batch_id, $case_type="", $user="")
+    {
+        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}' AND new_history_batch_detail.status_batch IN ('3','4','99')";
+
+        if (!empty($case_type)) {
+            $where .= " AND `case`.`type` ='{$case_type}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        $sql = "SELECT
+        client.id AS client_id,
+        client.full_name AS client_name
+        FROM
+        client
+        JOIN `case` ON `case`.client = client.id
+        JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+        ".$where.
+        "GROUP BY client.id
+        ORDER BY client.full_name ASC";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Client --</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->client_id.'">'.$row->client_name.'</option>';
+        }
+        return $output;
+    }
+
+    // GET STATUS BATCH PP BATCHING
+    public function get_status_batch_pp_batching($batch_id, $case_type="", $client="", $user="")
+    {
+        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}' AND new_history_batch_detail.status_batch IN ('3','4','99')";
+
+        if (!empty($case_type)) {
+            $where .= " AND `case`.`type` ='{$case_type}'";
+        }
+
+        if (!empty($client)) {
+            $where .= " AND `client`.`id` ='{$client}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        $sql = "SELECT
+        new_history_batch_detail.status_batch AS status_batch
+        FROM
+        client
+        JOIN `case` ON `case`.client = client.id
+        JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+        ".$where.
+        "GROUP BY new_history_batch_detail.status_batch
+        ORDER BY new_history_batch_detail.status_batch ASC";
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Batch Status --</option>';
+        foreach($prepared->result() as $row)
+        {
+            if ($row->status_batch == '3') {
+                $status_batch = 'Batching';
+            } else if ($row->status_batch == '4') {
+                $status_batch = 'CPV Release';
+            } else if ($row->status_batch == '99') {
+                $status_batch = 'Pending Approve CPV';
+            }
+            $output .= '<option value="'.$row->status_batch.'">'.$status_batch.'</option>';
+        }
+        return $output;
+    }
+
+    // GET SOURCE ACCOUNT PP BATCHING
+    public function get_source_account_pp_batching($batch_id, $case_type="", $client="", $status_batch, $user="")
+    {
+        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}' AND new_history_batch_detail.status_batch = '{$status_batch}'";
+
+        if (!empty($case_type)) {
+            $where .= " AND `case`.`type` ='{$case_type}'";
+        }
+
+        if (!empty($client)) {
+            $where .= " AND `client`.`id` ='{$client}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        $sql = "SELECT
+        client.full_name AS client_name,
+        client.bank AS bank_id,
+        bank.name AS source_bank,
+        client.account_no AS source_account
+        FROM
+        client
+        JOIN bank ON client.bank = bank.id
+        JOIN `case` ON `case`.client = client.id
+        JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+        ".$where.
+        "GROUP BY bank.id";
+
+        $prepared = $this->db->query($sql);
+        return $prepared;
+    }
+
+    // GET BENEFICIARY BANK PP BATCHING
+    public function get_beneficiary_bank_pp_batching($batch_id, $case_type="", $client="", $status_batch="", $source_bank="", $source_account="", $user="")
+    {
+       $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}'";
+
+        if (!empty($status_batch)) {
+            $where .= " AND new_history_batch_detail.status_batch ='{$status_batch}'";
+        }
+
+        if (!empty($source_bank)) {
+            if ($source_bank == 'No') {
+                $where .= " AND (client.bank = '' OR client.bank IS NULL)";
+            } else {
+                $where .= " AND client.bank ='{$source_bank}'";
+            }
+        }
+
+        if (!empty($source_account)) {
+            if ($source_account == 'No') {
+                $where .= " AND (client.account_no = '' OR client.account_no IS NULL)";
+            } else {
+                $where .= " AND client.account_no ='{$source_account}'";
+            }
+        }
+
+        if (!empty($client)) {
+            $where .= " AND client.id ='{$client}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch.username ='{$user}'";
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        if ($case_type == '2') {
+            $where .= " AND `case`.type = '{$case_type}'";
+
+            $sql = "SELECT
+            bank.`id` AS bank_id,
+            bank.`name` AS bank
+            FROM provider
+            JOIN `case` ON case.provider = provider.id
+            JOIN bank ON provider.bank = bank.id
+            JOIN client ON `case`.client = client.id
+            JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+            JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id
+            JOIN program ON (`case`.program = program.id AND program.client = client.id)"
+            .$where."
+            GROUP BY provider.bank
+            ORDER BY bank.`name` ASC";
+        } 
+        if ($case_type == '1' || $case_type == '3') {
+            $where .= " AND `case`.type = '{$case_type}' AND member.bank IS NOT NULL";
+
+            $sql = "SELECT
+            `case`.id,
+            member.bank AS bank_id,
+            member.bank AS bank
+            FROM member
+            JOIN `case` ON member.id = `case`.patient
+            JOIN client ON `case`.client = client.id
+            JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+            JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id
+            JOIN program ON (`case`.program = program.id AND program.client = client.id)"
+            .$where."
+            GROUP BY member.bank
+            ORDER BY member.bank ASC";
+        }
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Beneficiary Bank --</option>';
+        $output .= '<option value="No">No Beneficiary Bank</option>';
+        foreach($prepared->result() as $row)
+        {
+            $output .= '<option value="'.$row->bank_id.'">'.$row->bank.'</option>';
+        }
+        return $output; 
+    }
+
+    // GET BENEFICIARY ACCOUNT PP BATCHING
+    public function get_beneficiary_account_pp_batching($batch_id, $case_type="", $client="", $status_batch="", $source_bank="", $source_account="", $beneficiary_bank="", $user="")
+    {
+        $where = " WHERE new_history_batch_detail.history_id = '{$batch_id}'";
+
+        if (!empty($status_batch)) {
+            $where .= " AND new_history_batch_detail.status_batch ='{$status_batch}'";
+        }
+
+        if (!empty($source_bank)) {
+            if ($source_bank == 'No') {
+                $where .= " AND (client.bank = '' OR client.bank IS NULL)";
+            } else {
+                $where .= " AND client.bank ='{$source_bank}'";
+            }
+        }
+
+        if (!empty($source_account)) {
+            if ($source_account == 'No') {
+                $where .= " AND (client.account_no = '' OR client.account_no IS NULL)";
+            } else {
+                $where .= " AND client.account_no ='{$source_account}'";
+            }
+        }
+
+        if (!empty($client)) {
+            $where .= " AND client.id ='{$client}'";
+        }
+
+        if (!empty($user)) {
+            $where .= " AND new_history_batch.username ='{$user}'";
+            $where .= " AND new_history_batch_detail.username ='{$user}'";
+        }
+
+        if ($case_type == '2') {
+            $where .= " AND `case`.type = '{$case_type}'";
+            if (!empty($beneficiary_bank)) {
+                if ($beneficiary_bank == 'No') {
+                    $where .= " AND (provider.bank = '' OR provider.bank IS NULL)";
+                } else {
+                    $where .= " AND provider.bank ='{$beneficiary_bank}'";
+                }
+            }
+
+            $sql = "SELECT
+            `case`.id,
+            provider.full_name AS `name`,
+            provider.account_no AS account_no,
+            provider.on_behalf_of AS on_behalf_of,
+            bank.`name` AS bank
+            FROM provider
+            JOIN `case` ON case.provider = provider.id
+            JOIN program ON case.program = program.id
+            JOIN bank ON provider.bank = bank.id
+            JOIN client ON `case`.client = client.id
+            JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+            JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id"
+            .$where."
+            GROUP BY provider.id
+            ORDER BY bank.`name` ASC";
+        } 
+        if ($case_type == '1' || $case_type == '3') {
+            $where .= " AND `case`.type = '{$case_type}'";
+            $where .= " AND member.account_no != ''";
+            if (!empty($beneficiary_bank)) {
+                if ($beneficiary_bank == 'No') {
+                    $where .= " AND (member.bank = '' OR member.bank IS NULL)";
+                } else {
+                    $where .= " AND member.bank ='{$beneficiary_bank}'";
+                }
+            }
+
+            $sql = "SELECT
+            `case`.id,
+            member.member_name AS `name`,
+            member.account_no AS account_no,
+            member.on_behalf_of AS on_behalf_of,
+            member.bank AS bank
+            FROM member
+            JOIN `case` ON member.id = `case`.patient
+            JOIN program ON `case`.program = program.id
+            JOIN client ON `case`.client = client.id
+            JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
+            JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id"
+            .$where."
+            GROUP BY member.id
+            ORDER BY member.bank ASC";
+        }
+
+        $prepared = $this->db->query($sql);
+
+        $output = '<option value="" selected="">-- Select Beneficiary Account --</option>';
+        $output .= '<option value="No">No Beneficiary Account</option>';
+        foreach($prepared->result() as $row)
+        {
+            if ($row->name == '-' || $row->name == '') {
+                $on_behalf_of = '';
+            } else {
+                $on_behalf_of = ' ('.$row->name.')';
+            }
+
+            $output .= '<option value="'.$row->account_no.'">'.preg_replace('/[^0-9.]/', '',$row->account_no).$on_behalf_of.'</option>';
         }
         return $output;
     }
@@ -242,9 +541,9 @@ class M_New_Case extends CI_Model{
         return $query->result();
     }
 
-    public function record_batching($batch_id)
+    public function record_batching($batch_id, $status_batch)
     {
-        $query = $this->db->query("SELECT COUNT(case_id) AS record FROM new_history_batch_detail WHERE history_id ='$batch_id' GROUP BY history_id");
+        $query = $this->db->query("SELECT COUNT(case_id) AS record FROM new_history_batch_detail WHERE history_id ='$batch_id' AND new_history_batch_detail.status_batch IN ('$status_batch') GROUP BY history_id");
         return $query->row();
     }
 
@@ -2966,9 +3265,9 @@ class M_New_Case extends CI_Model{
             provider.account_no AS account_no_provider,
             new_history_batch_detail.cpv_id AS cpv_id"
         );
-    	// if ($this->input->post('payment_by')) {
-    	// 	$this->db->where('program.claim_paid_by ="'.$this->input->post('payment_by').'"');
-    	// }
+    	if ($this->input->post('status_batch')) {
+    		$this->db->where('new_history_batch_detail.status_batch ="'.$this->input->post('status_batch').'"');
+    	}
 
         if ($this->input->post('source_bank')) {
         $source_bank = $this->input->post('source_bank');
@@ -3075,7 +3374,7 @@ class M_New_Case extends CI_Model{
             }
         }
         $this->db->where('new_history_batch.id = "'.$batch_id.'"');
-        $this->db->where('new_history_batch_detail.status_batch IN ("3","4")');
+        $this->db->where('new_history_batch_detail.status_batch IN ("3","4","99")');
 
         // $this->db->where('case_status.`status` IN ('.$this->input->post('status').')');
         // $this->db->where("(new_history_batch_detail.cpv_id = '' OR new_history_batch_detail.cpv_id IS NULL)");
@@ -3173,9 +3472,9 @@ class M_New_Case extends CI_Model{
             provider.account_no AS account_no_provider,
             new_history_batch_detail.cpv_id AS cpv_id"
         );
-        // if ($this->input->post('payment_by')) {
-        //  $this->db->where('program.claim_paid_by ="'.$this->input->post('payment_by').'"');
-        // }
+        if ($this->input->post('status_batch')) {
+            $this->db->where('new_history_batch_detail.status_batch ="'.$this->input->post('status_batch').'"');
+        }
 
         if ($this->input->post('source_bank')) {
         $source_bank = $this->input->post('source_bank');
@@ -3283,7 +3582,7 @@ class M_New_Case extends CI_Model{
         }
 
         $this->db->where('new_history_batch.id = "'.$batch_id.'"');
-        $this->db->where('new_history_batch_detail.status_batch IN ("3","4")');
+        $this->db->where('new_history_batch_detail.status_batch IN ("3","4","99")');
         // $this->db->where('case_status.`status` IN ('.$this->input->post('status').')');
         // $this->db->where("(new_history_batch_detail.cpv_id = '' OR new_history_batch_detail.cpv_id IS NULL)");
         // $this->db->where('new_history_batch_detail.status_batch NOT IN ("9","11","22")');

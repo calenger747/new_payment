@@ -3,18 +3,7 @@
     <h4 class="card-title mdi mdi-filter"> Filter Data</h4>
   </div>
   <div class="card-body">
-    <input type="hidden" name="case_status" id="case_status" value="16">
     <div class="row">
-      <div class="col-md-6">
-        <div class="form-group">
-          <label>Case Type <span style="color: red;">*</span></label>
-          <select id="type" class="form-control">
-            <option value="2">Cashless</option>
-            <option value="1">Reimbursement</option>
-            <option value="3">Non-LOG</option>
-          </select>
-        </div>
-      </div>
       <div class="col-md-6">
         <div class="form-group">
           <label>Client <span style="color: red;">*</span></label>
@@ -23,40 +12,35 @@
           </select>
         </div>
       </div>
-      <input type="hidden" name="payment_by" class="form-control" id="payment_by" readonly="" value="">
-      <!-- <div class="col-md-6">
+      <div class="col-md-6">
         <div class="form-group">
-          <label>Payment By</label>
-          <select id="payment_by" class="form-control" name="payment_by" required="">
-            <option value="">-- Select Claim --</option>
-            <option value="1">AAI</option>
-            <option value="2">Client</option>
+          <label>Batch Status <span style="color: red;">*</span></label>
+          <select id="status_batch" name="status_batch" class="form-control" required="">
+            <option value="">-- Select Batch Status --</option>
           </select>
         </div>
-      </div> -->
+      </div>
     </div>
     <div class="row">
       <div class="col-md-6">
         <div class="form-group">
           <label>Source Bank <span style="color: red;">*</span></label>
-          <select id="source_bank" class="form-control" name="source_bank">
-            <option value="">-- Select Source Bank --</option>
-          </select>
+          <input type="hidden" name="source_bank" class="form-control" id="source_bank" readonly="" value="">
+          <input type="text" name="s_bank" class="form-control" id="s_bank" readonly="" value="">
         </div>
       </div>
       <div class="col-md-6">
         <div class="form-group">
           <label>Source Account <span style="color: red;">*</span></label>
-          <select id="source_account" class="form-control" name="source_account">
-            <option value="">-- Select Source Account --</option>
-          </select>
+          <input type="hidden" name="source_account" class="form-control" id="source_account" readonly="" value="">
+          <input type="text" name="s_account" class="form-control" id="s_account" readonly="" value="">
         </div>
       </div>
     </div>
     <div class="row">
       <div class="col-md-6">
         <div class="form-group">
-          <label>Beneficiary Bank</label>
+          <label>Beneficiary Bank <span style="color: red;">*</span></label>
           <select id="beneficiary_bank" class="form-control" name="beneficiary_bank">
             <option value="">-- Select Beneficiary Bank --</option>
           </select>
@@ -71,7 +55,7 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <!-- <div class="row">
       <div class="col-md-6">
         <div class="form-group">
           <label>Plan Benefit</label>
@@ -88,9 +72,19 @@
           </select>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Action <span style="color: red;">*</span></label>
+          <select id="action" class="form-control" name="action" required="">
+            <option value="" hidden="">-- Select Action --</option>
+            <option value="1">Re-Batch</option>
+            <option value="2">Generate CPV</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
         <div class="form-group">
           <label>Column Sort</label>
           <div class="row">
@@ -123,15 +117,22 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row" id="payment">
       <div class="col-md-6">
         <div class="form-group">
-          <label>Action <span style="color: red;">*</span></label>
-          <select id="action" class="form-control" name="action" required="">
-            <option value="" hidden="">-- Select Action --</option>
-            <option value="1">Re-Batch</option>
-            <option value="2">Generate CPV</option>
-          </select>
+          <label>Payment Date <span style="color: red;">*</span></label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="datepicker-autoclose3" placeholder="mm/dd/yyyy">
+            <div class="input-group-append">
+              <span class="input-group-text"><i class="icon-calender"></i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label>Upload Proof of Payment <span style="color: red;">*</span></label>
+          <input type="file" name="file" class="form-control document" id="file">
         </div>
       </div>
     </div>
@@ -160,6 +161,7 @@
   <div class="card-body">
     <div class="table-responsive m-t-5">
       <input type="hidden" name="batch_id" id="batch_id" value="<?= $this->input->get('batch_id'); ?>">
+      <input type="hidden" name="case_type" id="case_type" value="<?= $this->input->get('case_type'); ?>">
       <table id="case" class="table table-bordered table-striped">
         <thead>
           <tr class="text-center">
@@ -210,14 +212,14 @@
         "type" : 'POST',
         "data": function (data) {
           data.batch_id = $('#batch_id').val();
-          // data.tipe = $('#type').val();
-          // data.status = $('#case_status').val();
+          data.tipe = $('#case_type').val();
+          data.status_batch = $('#status_batch').val();
           // data.payment_by = $('#payment_by').val();
-          // data.source_bank = $('#source_bank').val();
-          // data.source_account = $('#source_account').val();
-          // data.beneficiary_bank = $('#beneficiary_bank').val();
-          // data.beneficiary_account = $('#beneficiary_account').val();
-          // data.client = $('#client').val();
+          data.source_bank = $('#source_bank').val();
+          data.source_account = $('#source_account').val();
+          data.beneficiary_bank = $('#beneficiary_bank').val();
+          data.beneficiary_account = $('#beneficiary_account').val();
+          data.client = $('#client').val();
           // data.plan = $('#plan').val();
           // data.obv_remarks = $('#obv_remarks').val();
           data.column = $('#column').val();
@@ -251,7 +253,7 @@
       },
       ],
       "rowCallback": function( row, data, index ) {
-        var type_case = $("#type").val();
+        var type_case = $("#case_type").val();
         if (type_case == '2') {
           if (data.account_provider == null || data.account_provider == "") {
             $('td', row).css('background-color', '#f5a742');
@@ -264,7 +266,7 @@
         } else {
           if (data.account_no_member == null || data.account_no_member == "") {
             $('td', row).css('background-color', '#f2ee16');
-            $('td', row).css('color', 'white');
+            $('td', row).css('color', 'black');
           }
           if ((data.account_provider == null || data.account_provider == "") && (data.account_no_client == null || data.account_no_client == "")) {
             $('td', row).css('background-color', '#f23b16');
@@ -275,502 +277,171 @@
           $('td', row).css('background-color', '#f57e2a');
           $('td', row).css('color', 'white');
         }
+        if (data.cpv_id != "") {
+          $('td', row).css('background-color', '#3acf63');
+          $('td', row).css('color', 'white');
+          // console.log(data.fup_id);
+        }
       },
     });
 
-    $('#type').show(function(){
-      var case_type = $(this).val();
-      var payment_by = $('#payment_by').val();
-      var case_status = $('#case_status').val();
-      var status_batch = '1';
+    $('#payment').hide();
+    $('#action').prop("disabled", true);
+    $('#btn-submit').prop("disabled", true);
 
-      if (case_type == '2') {
-        $('#case_status').val('16');
-      } else {
-        $('#case_status').val('27');
-      }
+    $('#client').show(function(){
+      var batch_id = $("#batch_id").val();
+      var case_type = $("#case_type").val();
 
       $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_client_batch",
+        url:"<?php echo base_url(); ?>Validated/get_client_pp_batching",
         method:"POST",
         data:{
+          batch_id:batch_id,
           case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          status_batch:status_batch,
         },
         success:function(data) {
           $('#client').html(data);
         }
       });
-
-      table.ajax.reload();
-    });
-
-    $('#type').change(function(){
-      var case_type = $(this).val();
-      var payment_by = $('#payment_by').val();
-      var status_batch = '1';
-
-      if (case_type == '2') {
-        $('#case_status').val('16');
-      } else {
-        $('#case_status').val('27');
-      }
-      var case_status = $('#case_status').val();
-
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/new_get_client_batch",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          status_batch:status_batch,
-        },
-        success:function(data) {
-          $('#client').html(data);
-        }
-      });
-
-      $('#source_bank').html('<option value="">-- Select Source Bank --</option>');
-      $('#source_account').html('<option value="">-- Select Source Account --</option>');
-      $('#beneficiary_bank').html('<option value="">-- Select Beneficiary Bank --</option>');
-      $('#beneficiary_account').html('<option value="">-- Select Beneficiary Account --</option>');
-
       table.ajax.reload();
     });
 
     $('#client').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var payment_by = $('#payment_by').val();
-      var source_bank = $('#source_bank').val();
-      var source_account = $('#source_account').val();
-      var beneficiary_bank = $('#beneficiary_bank').val();
-      var beneficiary_account = $('#beneficiary_account').val();
-      var client = $('#client').val();
-      var plan = $('#plan').val();
-      var status_batch = '1';
+      var batch_id = $("#batch_id").val();
+      var case_type = $("#case_type").val();
+      var client = $("#client").val();
 
-      if (client == '') {
-        $('#source_bank').html('<option value="" selected>-- Select Source Bank --</option>');
-        $('#plan').html('<option value="" selected="">-- Select Plan Benefit --</option>');
-        $('#obv_remarks').html('<option value="" selected="">-- Select OBV Remarks --</option>');
+      $.ajax({
+        url:"<?php echo base_url(); ?>Validated/get_status_batch_pp_batching",
+        method:"POST",
+        data:{
+          batch_id:batch_id,
+          case_type:case_type, 
+          client:client,
+        },
+        success:function(data) {
+          $('#status_batch').html(data);
+        }
+      });
+      table.ajax.reload();
+    });
+
+    $('#status_batch').change(function(){
+      var batch_id = $("#batch_id").val();
+      var case_type = $("#case_type").val();
+      var client = $('#client').val();
+      var status_batch = $('#status_batch').val();
+
+      if (status_batch == '') {
+        $('#source_bank').val('');
+        $('#s_bank').val('');
+        $('#source_account').val('');
+        $('#s_account').val('');
+
+        $('#beneficiary_bank').html('<option value="" selected>-- Select Beneficiary Bank --</option>');
+        $('#beneficiary_account').html('<option value="" selected>-- Select Beneficiary Account --</option>');
+
+        $('#payment').hide();
+        $('#action').html(
+          '<option value="" hidden="">-- Select Action --</option>' );
+        $('#action').prop("disabled", true);
+        $('#btn-submit').prop("disabled", true);
         
       } else {
         $.ajax({
-          url:"<?php echo base_url(); ?>Validated/new_get_source_bank",
+          url:"<?php echo base_url(); ?>Validated/get_source_account_pp_batching",
           method:"POST",
           data:{
-            case_type:case_type, 
-            case_status:case_status,
-            payment_by:payment_by,
-            status_batch:status_batch,
-            client:client,
+            batch_id:batch_id,
+            case_type:case_type,
+            client:client, 
+            status_batch:status_batch, 
           },
           success:function(data) {
-            $('#source_bank').html(data);
+            var json = $.parseJSON(data);
+            $('#source_bank').val(json.source_bank);
+            $('#s_bank').val(json.s_bank);
+            $('#source_account').val(json.source_account);
+            $('#s_account').val(json.s_account);
           }
         });
 
+        var source_bank = $('#source_bank').val();
+        var source_account = $('#source_account').val();
+
         $.ajax({
-          url:"<?php echo base_url(); ?>Validated/get_plan_benefit_4",
+          url:"<?php echo base_url(); ?>Validated/get_beneficiary_bank_pp_batching",
           method:"POST",
           data:{
-            case_type:case_type, 
-            case_status:case_status,
-            payment_by:payment_by,
+            batch_id:batch_id,
+            case_type:case_type,
+            client:client,
+            status_batch:status_batch,
             source_bank:source_bank,
             source_account:source_account,
-            beneficiary_bank:beneficiary_bank,
-            beneficiary_account:beneficiary_account,
-            status_batch:status_batch,
-            client:client,
-          },
-          success:function(data) {
-            $('#plan').html(data);
-          }
-        });
-        $.ajax({
-          url:"<?php echo base_url(); ?>Validated/get_obv_remarks",
-          method:"POST",
-          data:{
-            case_type:case_type, 
-            case_status:case_status,
-            payment_by:payment_by,
-            source_bank:source_bank,
-            source_account:source_account,
-            beneficiary_bank:beneficiary_bank,
-            beneficiary_account:beneficiary_account,
-            status_batch:status_batch,
-            client:client,
-            plan:plan,
-          },
-          success:function(data) {
-            $('#obv_remarks').html(data);
-          }
-        });
-      }
-      $('#source_account').html('<option value="">-- Select Source Account --</option>');
-      $('#beneficiary_bank').html('<option value="">-- Select Beneficiary Bank --</option>');
-      $('#beneficiary_account').html('<option value="">-- Select Beneficiary Account --</option>');
-
-      table.ajax.reload();
-    });
-
-    // $('#payment_by').change(function(){
-    //   var case_type = $('#type').val();
-    //   var case_status = $('#case_status').val();
-    //   var payment_by = $(this).val();
-    //   var source_bank = $('#source_bank').val();
-    //   var source_account = $('#source_account').val();
-    //   var beneficiary_bank = $('#beneficiary_bank').val();
-    //   var beneficiary_account = $('beneficiary_account').val();
-    //   var client = $('#client').val();
-    //   var status_batch = '1';
-
-    //   $.ajax({
-    //     url:"<?php echo base_url(); ?>Validated/new_get_source_bank",
-    //     method:"POST",
-    //     data:{
-    //       case_type:case_type, 
-    //       case_status:case_status,
-    //       payment_by:payment_by,
-    //       status_batch:status_batch,
-    //     },
-    //     success:function(data) {
-    //       $('#source_bank').html(data);
-    //     }
-    //   });
-
-    //   $.ajax({
-    //     url:"<?php echo base_url(); ?>Validated/new_get_beneficiary_bank",
-    //     method:"POST",
-    //     data:{
-    //       case_type:case_type, 
-    //       case_status:case_status,
-    //       payment_by:payment_by,
-    //       source_bank:source_bank,
-    //       source_account:source_account,
-    //       status_batch:status_batch,
-    //     },
-    //     success:function(data) {
-    //       $('#beneficiary_bank').html(data);
-    //     }
-    //   });
-
-    //   table.ajax.reload();
-    // });
-
-    $('#source_bank').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var payment_by = $('#payment_by').val();
-      var source_bank = $('#source_bank').val();
-      var source_account = $('#source_account').val();
-      var beneficiary_bank = $('#beneficiary_bank').val();
-      var beneficiary_account = $('#beneficiary_account').val();
-      var client = $('#client').val();
-      var plan = $('#plan').val();
-      var status_batch = '1';
-
-      if (source_bank == '') {
-        $('#source_account').html('<option value="" selected>-- Select Source Account --</option>');
-      } else {
-        $.ajax({
-          url:"<?php echo base_url(); ?>Validated/new_get_source_account",
-          method:"POST",
-          data:{
-            case_type:case_type, 
-            case_status:case_status,
-            payment_by:payment_by,
-            source_bank:source_bank,
-            status_batch:status_batch,
-            client:client,
-          },
-          success:function(data) {
-            $('#source_account').html(data);
-          }
-        });
-      }
-      $('#plan').html('<option value="" selected="">-- Select Plan Benefit --</option>');
-      $('#obv_remarks').html('<option value="" selected="">-- Select OBV Remarks --</option>');
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/get_plan_benefit_4",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          source_bank:source_bank,
-          source_account:source_account,
-          beneficiary_bank:beneficiary_bank,
-          beneficiary_account:beneficiary_account,
-          status_batch:status_batch,
-          client:client,
-        },
-        success:function(data) {
-          $('#plan').html(data);
-        }
-      });
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/get_obv_remarks",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          source_bank:source_bank,
-          source_account:source_account,
-          beneficiary_bank:beneficiary_bank,
-          beneficiary_account:beneficiary_account,
-          status_batch:status_batch,
-          client:client,
-          plan:plan,
-        },
-        success:function(data) {
-          $('#obv_remarks').html(data);
-        }
-      });
-      $('#beneficiary_bank').html('<option value="">-- Select Beneficiary Bank --</option>');
-      $('#beneficiary_account').html('<option value="">-- Select Beneficiary Account --</option>');
-
-      table.ajax.reload();
-    });
-
-    $('#source_account').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var payment_by = $('#payment_by').val();
-      var source_bank = $('#source_bank').val();
-      var source_account = $(this).val();
-      var beneficiary_bank = $('#beneficiary_bank').val();
-      var beneficiary_account = $('beneficiary_account').val();
-      var client = $('#client').val();
-      var plan = $('#plan').val();
-      var status_batch = '1';
-      // console.log(source_account);
-      if (source_account == '') {
-        $('#beneficiary_bank').html('<option value="" selected>-- Select Beneficiary Bank --</option>');
-      } else {
-        $.ajax({
-          url:"<?php echo base_url(); ?>Validated/new_get_beneficiary_bank",
-          method:"POST",
-          data:{
-            case_type:case_type, 
-            case_status:case_status,
-            payment_by:payment_by,
-            source_bank:source_bank,
-            source_account:source_account,
-            status_batch:status_batch,
-            client:client,
           },
           success:function(data) {
             $('#beneficiary_bank').html(data);
           }
         });
+
+        $('#action').prop("disabled", false);
+        if (status_batch == '3') {
+          $('#payment').hide();
+          $('#action').html('<option value="">-- Select Action --</option>'+
+            '<option value="1">Generate CPV</option>'+
+            '<option value="2">Proceed Status</option>');
+        } else if (status_batch == '4') {
+          $('#payment').hide();
+          $('#action').html('<option value="">-- Select Action --</option>'+
+            '<option value="2">Proceed Status</option>');
+        } else {
+          $('#payment').hide();
+          $('#action').prop("disabled", true);
+          $('#action').html('<option value="">-- Select Action --</option>');
+        }
       }
-      $('#plan').html('<option value="" selected="">-- Select Plan Benefit --</option>');
-      $('#obv_remarks').html('<option value="" selected="">-- Select OBV Remarks --</option>');
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/get_plan_benefit_4",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          source_bank:source_bank,
-          source_account:source_account,
-          beneficiary_bank:beneficiary_bank,
-          beneficiary_account:beneficiary_account,
-          status_batch:status_batch,
-          client:client,
-        },
-        success:function(data) {
-          $('#plan').html(data);
-        }
-      });
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/get_obv_remarks",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          source_bank:source_bank,
-          source_account:source_account,
-          beneficiary_bank:beneficiary_bank,
-          beneficiary_account:beneficiary_account,
-          status_batch:status_batch,
-          client:client,
-          plan:plan,
-        },
-        success:function(data) {
-          $('#obv_remarks').html(data);
-        }
-      });
       $('#beneficiary_account').html('<option value="">-- Select Beneficiary Account --</option>');
 
       table.ajax.reload();
     });
 
+
     $('#beneficiary_bank').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var payment_by = $('#payment_by').val();
+      var batch_id = $("#batch_id").val();
+      var case_type = $("#case_type").val();
+      var client = $('#client').val();
+      var status_batch = $('#status_batch').val();
       var source_bank = $('#source_bank').val();
       var source_account = $('#source_account').val();
-      var beneficiary_bank = $(this).val();
-      var beneficiary_account = $('#beneficiary_account').val();
-      var client = $('#client').val();
-      var plan = $('#plan').val();
-      var status_batch = '1';
+      var beneficiary_bank = $('#beneficiary_bank').val();
 
       if (beneficiary_bank == '') {
         $('#beneficiary_account').html('<option value="" selected>-- Select Beneficiary Account --</option>');
       } else {
         $.ajax({
-          url:"<?php echo base_url(); ?>Validated/new_get_beneficiary_account",
+          url:"<?php echo base_url(); ?>Validated/get_beneficiary_account_pp_batching",
           method:"POST",
           data:{
-            case_type:case_type, 
-            case_status:case_status,
-            payment_by:payment_by,
+            batch_id:batch_id,
+            case_type:case_type,
+            client:client,
+            status_batch:status_batch,
             source_bank:source_bank,
             source_account:source_account,
             beneficiary_bank:beneficiary_bank,
-            status_batch:status_batch,
-            client:client,
           },
           success:function(data) {
             $('#beneficiary_account').html(data);
           }
         });
       }
-      $('#plan').html('<option value="" selected="">-- Select Plan Benefit --</option>');
-      $('#obv_remarks').html('<option value="" selected="">-- Select OBV Remarks --</option>');
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/get_plan_benefit_4",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          source_bank:source_bank,
-          source_account:source_account,
-          beneficiary_bank:beneficiary_bank,
-          beneficiary_account:beneficiary_account,
-          status_batch:status_batch,
-          client:client,
-        },
-        success:function(data) {
-          $('#plan').html(data);
-        }
-      });
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/get_obv_remarks",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          source_bank:source_bank,
-          source_account:source_account,
-          beneficiary_bank:beneficiary_bank,
-          beneficiary_account:beneficiary_account,
-          status_batch:status_batch,
-          client:client,
-          plan:plan,
-        },
-        success:function(data) {
-          $('#obv_remarks').html(data);
-        }
-      });
+      
       table.ajax.reload();
     });
 
     $('#beneficiary_account').change(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var payment_by = $('#payment_by').val();
-      var source_bank = $('#source_bank').val();
-      var source_account = $('#source_account').val();
-      var beneficiary_bank = $('#beneficiary_bank').val();
-      var beneficiary_account = $('#beneficiary_account').val();
-      var client = $('#client').val();
-      var plan = $('#plan').val();
-      var status_batch = '1';
-
-      $('#plan').html('<option value="" selected="">-- Select Plan Benefit --</option>');
-      $('#obv_remarks').html('<option value="" selected="">-- Select OBV Remarks --</option>');
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/get_plan_benefit_4",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          source_bank:source_bank,
-          source_account:source_account,
-          beneficiary_bank:beneficiary_bank,
-          beneficiary_account:beneficiary_account,
-          status_batch:status_batch,
-          client:client,
-        },
-        success:function(data) {
-          $('#plan').html(data);
-        }
-      });
-      $.ajax({
-        url:"<?php echo base_url(); ?>Validated/get_obv_remarks",
-        method:"POST",
-        data:{
-          case_type:case_type, 
-          case_status:case_status,
-          payment_by:payment_by,
-          source_bank:source_bank,
-          source_account:source_account,
-          beneficiary_bank:beneficiary_bank,
-          beneficiary_account:beneficiary_account,
-          status_batch:status_batch,
-          client:client,
-          plan:plan,
-        },
-        success:function(data) {
-          $('#obv_remarks').html(data);
-        }
-      });
-      table.ajax.reload();
-
-      // var case_type = $('#type').val();
-      // var case_status = $('#case_status').val();
-      // var payment_by = $('#payment_by').val();
-      // var source_bank = $('#source_bank').val();
-      // var source_account = $('#source_account').val();
-      // var beneficiary_bank = $('#beneficiary_bank').val();
-      // var beneficiary_account = $('beneficiary_account').val();
-      // var client = $('#client').val();
-      // var status_batch = '1';
-
-      // $.ajax({
-      //   url:"<?php echo base_url(); ?>Validated/new_get_client_batch",
-      //   method:"POST",
-      //   data:{
-      //     case_type:case_type, 
-      //     case_status:case_status,
-      //     payment_by:payment_by,
-      //     source_bank:source_bank,
-      //     source_account:source_account,
-      //     beneficiary_bank:beneficiary_bank,
-      //     beneficiary_account:beneficiary_account,
-      //     status_batch:status_batch,
-      //   },
-      //   success:function(data) {
-      //     $('#client').html(data);
-      //   }
-      // });
-
       table.ajax.reload();
     });
 
@@ -810,6 +481,21 @@
       table.ajax.reload();
     });
 
+    $('#action').change(function(){
+      var action = $(this).val();
+
+      if (action == '2') {
+        $('#payment').show();
+        $('#btn-submit').prop("disabled", false);
+      } else if (action == '1') {
+        $('#payment').hide();
+        $('#btn-submit').prop("disabled", false);
+      } else {
+        $('#payment').hide();
+        $('#btn-submit').prop("disabled", true);
+      }
+    });
+
     $('#obv_remarks').change(function(){
       table.ajax.reload();
     });
@@ -842,19 +528,28 @@
       }
     });
 
+    $('#datepicker-autoclose3').datepicker({
+      autoclose: true,
+      todayHighlight: true
+    });
+
     $('#btn-submit').click(function(){
-      var case_type = $('#type').val();
-      var case_status = $('#case_status').val();
-      var payment_by = $('#payment_by').val();
+      var batch_id = $("#batch_id").val();
+      var case_type = $("#case_type").val();
+      var client = $('#client').val();
+      var status_batch = $('#status_batch').val();
       var source_bank = $('#source_bank').val();
       var source_account = $('#source_account').val();
       var beneficiary_bank = $('#beneficiary_bank').val();
       var beneficiary_account = $('#beneficiary_account').val();
-      var client = $('#client').val();
-      var action = $('#action').val();
-      var status_batch = '1';
 
-      if (action == '1') {
+      var beneficiary_bank = $('#beneficiary_bank').val();
+      var beneficiary_account = $('#beneficiary_account').val();
+
+      var payment_date = $('#datepicker-autoclose3').val();
+      var action = $('#action').val();
+
+      if (action == '9') {
         var checkbox = $('.check:checked');
         if(checkbox.length > 0)
         {
@@ -907,7 +602,7 @@
             buttons: "Close",
           });
         }
-      } else if (action == '2') {
+      } else if (action == '1') {
         if (source_bank == '') {
           swal({
             title: "Error!",
@@ -940,7 +635,7 @@
         var checkbox = $('.check:checked');
         if(checkbox.length > 0)
         {
-          var case_type = $('#type').val();
+          var case_type = $('#case_type').val();
 
           var checkbox_value = [];
           $(checkbox).each(function(){
@@ -955,20 +650,19 @@
           }).then((result) => {
             if (result) {
               $.ajax({
-                url:"<?php echo base_url(); ?>Process_Status/CPV_Generate/" + `${case_type}`,
+                url:"<?php echo base_url(); ?>Process_Status/CPV_Generate",
                 method:"POST",
                 datatype:"json",
                 data:{
                   checkbox_value:checkbox_value,
-                  case_type:case_type, 
-                  case_status:case_status,
-                  payment_by:payment_by,
+                  batch_id:batch_id,
+                  case_type:case_type,
+                  client:client,
+                  status_batch:status_batch,
                   source_bank:source_bank,
                   source_account:source_account,
                   beneficiary_bank:beneficiary_bank,
                   beneficiary_account:beneficiary_account,
-                  client:client,
-                  status_batch:status_batch,
                 },
                 beforeSend :function() {
                   swal({
@@ -1010,6 +704,86 @@
             title: "Error!",
             icon: "error",
             text: "Select atleast one records",
+            buttons: "Close",
+          });
+        }
+      }
+    } else if (action == '2') {
+      if (payment_date == '') {
+        swal({
+          title: "Error!",
+          icon: "error",
+          text: "Please Choose A Payment Date",
+          buttons: "Close",
+        });
+      } else {
+        var fileInput = $('#file')[0];
+        if( fileInput.files.length > 0 ){
+          var formData = new FormData();
+          $.each(fileInput.files, function(k,file){
+            formData.append('file[]', file);
+          });
+
+          var checkbox = $('.check:checked');
+          if(checkbox.length > 0)
+          {
+            var checkbox_value = [];
+            $(checkbox).each(function(){
+              checkbox_value.push($(this).val());
+            });
+
+            swal({
+              title: "Proceed Status Case ?",
+              icon: "warning",
+              buttons: true,
+              dangerMode: true,
+            }).then((result) => {
+              if (result) {
+                $.ajax({
+                  method: 'post',
+                  url:"<?php echo base_url(); ?>Process_Status/tes?case_id="+checkbox_value+"&payment_date="+payment_date,
+                  data: formData,
+                  dataType: 'json',
+                  contentType: false,
+                  processData: false,
+                  success: function(json){
+                    console.log(json);
+                    // var json = $.parseJSON(response);
+                    if (json.success == true) {
+                      swal({
+                        title: "Success!",
+                        icon: "success",
+                        text: json.message,
+                        buttons: "Close",
+                      });
+                      table.ajax.reload();
+                      $("#checkbox1").prop("checked",false);
+                    } else {
+                      swal({
+                        title: "Failed!",
+                        icon: "error",
+                        text: json.message,
+                        buttons: "Close",
+                      });
+                      $("#checkbox1").prop("checked",false);
+                    }
+                  }
+                });
+              }
+            })
+          } else {
+            swal({
+              title: "Error!",
+              icon: "error",
+              text: "Select atleast one records",
+              buttons: "Close",
+            });
+          }
+        } else {
+          swal({
+            title: "Error!",
+            icon: "error",
+            text: "Please Choose A File Upload Proof of Payment",
             buttons: "Close",
           });
         }
