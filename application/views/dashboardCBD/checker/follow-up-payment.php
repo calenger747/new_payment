@@ -55,12 +55,12 @@
       <table id="fup_list" class="table table-bordered table-striped" style="width: 100%;">
         <thead>
           <tr class="text-center">
-            <th style="font-size: 14px;" width="146px">Action</th>
-            <th style="font-size: 14px;" width="270px">FuP Number</th>
-            <th style="font-size: 14px;" width="200px">Client</th>
-            <th style="font-size: 14px;" width="100px">Created Date</th>
-            <th style="font-size: 14px;" width="100px">Total Record</th>
-            <th style="font-size: 14px;" width="131px">Total Cover</th>
+            <th style="font-size: 14px;" width="10%">Action</th>
+            <th style="font-size: 14px;" width="20%">FuP Number</th>
+            <th style="font-size: 14px;" width="20%">Client</th>
+            <th style="font-size: 14px;" width="20%">Created Date</th>
+            <th style="font-size: 14px;" width="10%">Total Record</th>
+            <th style="font-size: 14px;" width="20%">Total Cover</th>
           </tr>
         </thead>
         <tbody style="font-size: 12px;">
@@ -126,7 +126,7 @@
       var client = $('#client').val();
 
       $('#client').html('<option value="" selected>-- Select Client --</option>');
-      
+
       $.ajax({  
         url:"<?php echo base_url(); ?>Validated/get_client_fup",
         method:"POST",

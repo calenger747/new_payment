@@ -57,8 +57,23 @@ class Dashboard_CBD_Checker extends CI_Controller {
 			'data_status' => $this->new_case->get_status(), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard CBD Checker - Batching Case", $path, "Batching Case", "Proceed Status"),
-			"content" =>$this->load->view('dashboardCBD/checker/batching-case', $get, true)
+			"page" => $this->load("Document Batching", $path, "Document Batching", ""),
+			"content" =>$this->load->view('dashboardCBD/batcher/initial-batching', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function doc_batching_detail()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("Document Batching Detail", $path, "Document Batching", "Document Batching (Detail)"),
+			"content" =>$this->load->view('dashboardCBD/batcher/doc-batching-detail', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -70,8 +85,8 @@ class Dashboard_CBD_Checker extends CI_Controller {
 		$js = "";
 		$path = "";
 		$data = array(
-			"page" => $this->load("Dashboard CBD Checker - Follow Up Payment List", $path, "Follow Up Payment List", ""),
-			"content" =>$this->load->view('dashboardCBD/checker/follow-up-payment', false, true)
+			"page" => $this->load("Follow Up Payment List", $path, "Follow Up Payment List", ""),
+			"content" =>$this->load->view('dashboardCBD/batcher/follow-up-payment', false, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -86,8 +101,8 @@ class Dashboard_CBD_Checker extends CI_Controller {
 			'fup_detail' => $this->new_case->fup_detail($fup_id), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard CBD Checker - Follow Up Payment Detail", $path, "Follow Up Payment List", "Follow Up Payment Detail"),
-			"content" =>$this->load->view('dashboardCBD/checker/follow-up-payment-detail', $get, true)
+			"page" => $this->load("Follow Up Payment Detail", $path, "Follow Up Payment List", "Follow Up Payment Detail"),
+			"content" =>$this->load->view('dashboardCBD/batcher/follow-up-payment-detail', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}

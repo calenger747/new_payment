@@ -27,12 +27,7 @@
                 <li class=""> <a href="<?= base_url(); ?>Dashboard_CBD_Checker/case_data" aria-expanded="false"><i class="mdi mdi-database"></i><span class="hide-menu">Data Case</span></a></li> -->
 
                 <li class="nav-small-cap">BATCHING CASE</li>
-                <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Batching Case</span></a>
-                    <ul aria-expanded="false" class="collapse">
-                        <li><a href="<?= base_url(); ?>Dashboard_CBD_Checker/batching_case">Proceed Status</a></li>
-                        <!-- <li><a href="<?= base_url(); ?>Dashboard_CBD_Checker/payment_batch">Generate CPV</a></li> -->
-                    </ul>
-                </li>
+                <li class=""> <a href="<?= base_url(); ?>Dashboard_CBD_Checker/batching_case" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Document Batching</span></a></li>
 
                 <!-- <li class="nav-small-cap">Upload Batching</li>
                 <li class=""> <a href="<?= base_url(); ?>Dashboard_Admin/upload_batching" aria-expanded="false"><i class="mdi mdi-cloud-upload"></i><span class="hide-menu">Upload Case Batching</span></a

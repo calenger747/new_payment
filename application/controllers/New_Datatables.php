@@ -197,10 +197,10 @@ class New_Datatables extends CI_Controller {
 			$no++;
 			if ($this->session->userdata('level_user') == '-1') {
 				$user = 'Dashboard_Admin';
-			} else if ($this->session->userdata('level_user') == '91') {
-				$user = 'Dashboard_CBD_Batcher';
-			} else if ($this->session->userdata('level_user') == '92') {
-				$user = 'Dashboard_CBD_Checker';
+			} else if ($this->session->userdata('level_user') == '93') {
+				$user = 'Dashboard_Payment_Admin';
+			} else if ($this->session->userdata('level_user') == '94') {
+				$user = 'Dashboard_Payment_Checker';
 			}
 
 			if ($case->case_type == '1') {
@@ -310,10 +310,10 @@ class New_Datatables extends CI_Controller {
 			$no++;
 			if ($this->session->userdata('level_user') == '-1') {
 				$user = 'Dashboard_Admin';
-			} else if ($this->session->userdata('level_user') == '91') {
-				$user = 'Dashboard_CBD_Batcher';
-			} else if ($this->session->userdata('level_user') == '92') {
-				$user = 'Dashboard_CBD_Checker';
+			} else if ($this->session->userdata('level_user') == '93') {
+				$user = 'Dashboard_Payment_Admin';
+			} else if ($this->session->userdata('level_user') == '94') {
+				$user = 'Dashboard_Payment_Checker';
 			}
 
 			if ($case->case_type == '1') {

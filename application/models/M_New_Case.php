@@ -828,7 +828,7 @@ class M_New_Case extends CI_Model{
 
     public function get_status_2($type, $status)
     {
-    	$query = $this->db->query("SELECT a.status, a.name FROM case_status AS a JOIN `case` AS b ON a.status = b.status WHERE b.type = '$type' AND a.status IN($status) GROUP BY a.status ORDER BY a.status ASC");
+    	$query = $this->db->query("SELECT a.status, a.name FROM case_status AS a JOIN `case` AS b ON a.status = b.status WHERE b.type = '$type' AND a.status IN($status) AND b.id NOT IN (SELECT case_id FROM new_history_batch_detail WHERE status_batch <> 9) GROUP BY a.status ORDER BY a.status ASC");
 
     	$output = '<option value="" hidden="">-- Select Status --</option>';
     	foreach($query->result() as $row)

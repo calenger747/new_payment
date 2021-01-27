@@ -15,10 +15,32 @@ class Validated extends CI_Controller {
 	public function get_status()
 	{
 		$case_type = $this->input->post('case_type');
+
 		if ($case_type == '2') {
-			$status = "15,16,17";
+			if ($this->session->userdata('level_user') == '91') {
+				$status = "17,18";
+			} else if ($this->session->userdata('level_user') == '92') {
+				$status = "17,18";
+			} else if ($this->session->userdata('level_user') == '93') {
+				$status = "15,16";
+			} else if ($this->session->userdata('level_user') == '94') {
+				$status = "15,16";
+			} else if ($this->session->userdata('level_user') == '-1') {
+				$status = "15,16,17,18";
+			}
 		} else {
-			$status = "26,27,28";
+			if ($this->session->userdata('level_user') == '91') {
+				$status = "28,29";
+			} else if ($this->session->userdata('level_user') == '92') {
+				$status = "28,29";
+			} else if ($this->session->userdata('level_user') == '93') {
+				$status = "26,27";
+			} else if ($this->session->userdata('level_user') == '94') {
+				$status = "26,27";
+			} else if ($this->session->userdata('level_user') == '-1') {
+				$status = "26,27,28,29";
+			}
+			// $status = "26,27,28";
 		}
 		echo $this->new_case->get_status_2($case_type, $status);
 	}

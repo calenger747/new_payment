@@ -104,5 +104,17 @@
       },
       ],
     });
+
+    $('#type').change(function(){
+      table.ajax.reload();
+    });
+
+    $('#column').change(function(){
+      table.ajax.reload();
+    });
+
+    $('#order').change(function(){
+      table.ajax.reload();
+    });
   });
 </script>

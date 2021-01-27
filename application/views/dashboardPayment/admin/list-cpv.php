@@ -61,16 +61,16 @@
   <div class="card-body">
     <h4 class="card-title">CPV Data</h4>
     <div class="table-responsive m-t-40">
-      <table id="cpv_list" class="table table-bordered table-striped">
+      <table id="cpv_list" class="table table-bordered table-striped" style="width: 100%;">
         <thead>
           <tr class="text-center">
-            <th style="font-size: 14px;" width="146px">Action</th>
-            <th style="font-size: 14px;" width="170px">CPV Number</th>
-            <th style="font-size: 14px;" width="200px">Client</th>
-            <th style="font-size: 14px;" width="150px">Source Account</th>
-            <th style="font-size: 14px;" width="155px">Created Date</th>
-            <th style="font-size: 14px;" width="50px">Total Record</th>
-            <th style="font-size: 14px;" width="131px">Total Cover</th>
+            <th style="font-size: 14px;" width="12%">Action</th>
+            <th style="font-size: 14px;" width="18%">CPV Number</th>
+            <th style="font-size: 14px;" width="16%">Client</th>
+            <th style="font-size: 14px;" width="20%">Source Account</th>
+            <th style="font-size: 14px;" width="13%">Created Date</th>
+            <th style="font-size: 14px;" width="6%">Total Record</th>
+            <th style="font-size: 14px;" width="15%">Total Cover</th>
           </tr>
         </thead>
         <tbody style="font-size: 12px;">

@@ -69,8 +69,65 @@ class Dashboard_Payment_Checker extends CI_Controller {
 			'data_status' => $this->new_case->get_status(), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Payment Checker - Batching Case", $path, "Batching Case", "Proceed Status"),
-			"content" =>$this->load->view('dashboardPayment/checker/batching-case', $get, true)
+			"page" => $this->load("Dashboard Admin - OBV Batching", $path, "Batching Case", "OBV Batching"),
+			"content" =>$this->load->view('dashboardAdmin/batching-case', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function batching_case_detail()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("Dashboard Admin - OBV Batching Detail", $path, "Batching Case", "OBV Batching (Detail)"),
+			"content" =>$this->load->view('dashboardAdmin/batching-case-detail', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function payment_batch()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Generate CPV", $path, "Batching Case", "Generate CPV"),
+			"content" =>$this->load->view('dashboardAdmin/payment-batch', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function payment_batch_detail()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Payment Batching Detail", $path, "Batching Case", "Payment  Batching (Detail)"),
+			"content" =>$this->load->view('dashboardAdmin/payment-batch-detail', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function upload_batching()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$data = array(
+			"page" => $this->load("Dashboard Admin - Upload Case Batching", $path, "Upload Case Batching", ""),
+			"content" =>$this->load->view('dashboardAdmin/upload_batching', false, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -81,8 +138,8 @@ class Dashboard_Payment_Checker extends CI_Controller {
 		$js = "";
 		$path = "";
 		$data = array(
-			"page" => $this->load("Dashboard Payment Checker - CPV List", $path, "CPV List", ""),
-			"content" =>$this->load->view('dashboardPayment/checker/list-cpv', false, true)
+			"page" => $this->load("Dashboard Admin - CPV List", $path, "CPV List", ""),
+			"content" =>$this->load->view('dashboardAdmin/list-cpv', false, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -96,8 +153,8 @@ class Dashboard_Payment_Checker extends CI_Controller {
 			'cpv_detail' => $this->new_case->cpv_detail($cpv_id), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Payment Checker - CPV Detail", $path, "CPV List", "CPV Detail"),
-			"content" =>$this->load->view('dashboardPayment/checker/new-cpv-detail-cashless', $get, true)
+			"page" => $this->load("Dashboard Admin - CPV Detail", $path, "CPV List", "CPV Detail"),
+			"content" =>$this->load->view('dashboardAdmin/new-cpv-detail-cashless', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -111,9 +168,10 @@ class Dashboard_Payment_Checker extends CI_Controller {
 			'cpv_detail' => $this->new_case->cpv_detail($cpv_id), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Payment Checker - CPV Detail", $path, "CPV List", "CPV Detail"),
-			"content" =>$this->load->view('dashboardPayment/checker/new-cpv-detail-reimbursement', $get, true)
+			"page" => $this->load("Dashboard Admin - CPV Detail", $path, "CPV List", "CPV Detail"),
+			"content" =>$this->load->view('dashboardAdmin/new-cpv-detail-reimbursement', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
+
 }

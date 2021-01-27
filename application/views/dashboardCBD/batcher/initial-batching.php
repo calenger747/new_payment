@@ -16,14 +16,35 @@
       </div>
       <div class="col-md-6">
         <div class="form-group">
+          <label>Column Sort</label>
+          <div class="row">
+            <div class="col-md-6">
+              <select id="column" name="column" class="form-control" required="">
+                <option value="tgl_batch">Date of Batch</option>
+                <option value="case_type">Case Type</option>
+                <option value="client">Client</option>
+                <option value="remarks">Remarks</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <select id="order_by" name="order_by" class="form-control" required="">
+                <option value="DESC">Z to A</option>
+                <option value="ASC">A to Z</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="col-md-6">
+        <div class="form-group">
           <label>Case Status <span style="color: red;">*</span></label>
           <select id="case_status" class="form-control">
             <option value="" hidden="">-- Select Status --</option>
           </select>
         </div>
-      </div>
+      </div> -->
     </div>
-    <div class="row">
+    <!-- <div class="row">
       <div class="col-md-6">
         <div class="form-group">
           <label>Date of Batch</label>
@@ -68,38 +89,6 @@
           </select>
         </div>
       </div>
-      <div class="col-md-6">
-        <div class="form-group">
-          <label>Column Sort</label>
-          <div class="row">
-            <div class="col-md-6">
-              <select id="column" name="column" class="form-control" required="">
-                <option value="case_id">Case Id</option>
-                <option value="status_case">Case Status</option>
-                <option value="case_ref">Case Ref</option>
-                <option value="receive_date">Receive Date</option>
-                <option value="category_case">Case Category</option>
-                <option value="type">Case Type</option>
-                <option value="client">Client</option>
-                <option value="member">Patient</option>
-                <option value="member_id">Member Id</option>
-                <option value="member_card">Member Card</option>
-                <option value="policy_no">Policy No</option>
-                <option value="provider">Medical Provider</option>
-                <option value="other_provider">Non-Panel</option>
-                <option value="admission_date">Admission Date</option>
-                <option value="discharge_date">Discharge Date</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <select id="order_by" name="order_by" class="form-control" required="">
-                <option value="ASC">A to Z</option>
-                <option value="DESC">Z to A</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
     <div class="row">
       <div class="col-md-6">
@@ -123,10 +112,40 @@
           <button type="button" id="btn-submit" class="btn btn-info btn-sm float-right">Proceed</button>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>
 <div class="card">
+  <div class="card-header" style="background-color: #fff;">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="card-title">
+          <h4 class="mdi mdi-book-open-variant"> Batching Data</h4>  
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive m-t-40">
+      <table id="case" class="table table-bordered table-striped" style="width: 100%;">
+        <thead>
+          <tr class="text-center">
+            <th style="font-size: 14px;" width="12%">Action</th>
+            <th style="font-size: 14px;" width="18%">Date of Batch</th>
+            <th style="font-size: 14px;" width="13%">Case Type</th>
+            <th style="font-size: 14px;" width="21%">Client</th>
+            <th style="font-size: 14px;" width="30%">Remarks</th>
+            <th style="font-size: 14px;" width="6%">Total Record</th>
+          </tr>
+        </thead>
+        <tbody style="font-size: 12px;">
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- <div class="card">
   <div class="card-header" style="background-color: #fff;">
     <div class="row">
       <div class="col-md-8">
@@ -145,7 +164,7 @@
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="checkbox1">
                 <label class="custom-control-label" for="checkbox1">
-                  <!-- <button type="button" id="batch-all" class="btn btn-sm btn-danger bg-red bg-accent-3"> Batch</button> -->
+                  <button type="button" id="batch-all" class="btn btn-sm btn-danger bg-red bg-accent-3"> Batch</button>
                 </label>
               </div>
             </th>
@@ -172,7 +191,7 @@
       </table>
     </div>
   </div>
-</div>
+</div> -->
 <script type="text/javascript">
   $(document).ready(function(){
     var base = '<?= base_url(); ?>';
@@ -188,12 +207,6 @@
         "type" : 'POST',
         "data": function (data) {
           data.tipe = $('#type').val();
-          data.status = $('#case_status').val();
-          data.tgl_batch = $('#tgl_batch').val();
-          data.history_batch = $('#history_batch').val();
-          data.status_batch = $('#status_batch').val();
-          data.client = $('#client').val();
-          data.plan = $('#plan').val();
           data.column = $('#column').val();
           data.order_by = $('#order_by').val();
         },
@@ -202,21 +215,11 @@
 
       'columns': [
       { data: 'button' },
-      { data: 'case_id' },
-      { data: 'status_case' },
-      { data: 'case_ref' },
-      { data: 'receive_date' },
-      { data: 'category_case' },
-      { data: 'type' },
+      { data: 'tgl_batch' },
+      { data: 'case_type' },
       { data: 'client' },
-      { data: 'member' },
-      { data: 'member_id' },
-      { data: 'member_card' },
-      { data: 'policy_no' },
-      { data: 'provider' },
-      { data: 'other_provider' },
-      { data: 'admission_date' },
-      { data: 'discharge_date' },
+      { data: 'remarks' },
+      { data: 'record' },
       ],
       "columnDefs": [
       { 
@@ -224,12 +227,6 @@
         "orderable": false, //set not orderable
       },
       ],
-      "rowCallback": function( row, data, index ) {
-        if (data.account_no == null || data.account_no == "") {
-          $('td', row).css('background-color', 'Red');
-          $('td', row).css('color', 'white');
-        }
-      },
     });
 
     $('#remarks').prop("disabled", true);

@@ -57,23 +57,8 @@ class Dashboard_Payment_Admin extends CI_Controller {
 			'data_status' => $this->new_case->get_status(), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Payment Admin - Data Case", $path, "Data Case", ""),
+			"page" => $this->load("Data Case", $path, "Data Case", ""),
 			"content" =>$this->load->view('dashboardPayment/admin/case-data', $get, true)
-		);
-		$this->load->view('template/default_template', $data);
-	}
-
-	public function initial_batching()
-	{
-		$css = "";
-		$js = "";
-		$path = "";
-		$get = array(
-			'data_status' => $this->new_case->get_status(), 
-		);
-		$data = array(
-			"page" => $this->load("Dashboard Payment Admin - Initial Batching", $path, "Batching Case", "Initial Batching"),
-			"content" =>$this->load->view('dashboardPayment/admin/initial-batching', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -87,8 +72,23 @@ class Dashboard_Payment_Admin extends CI_Controller {
 			'data_status' => $this->new_case->get_status(), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Payment Admin - Batching Case", $path, "Batching Case", "Proceed Status"),
+			"page" => $this->load("OBV Batching", $path, "Batching Case", "OBV Batching"),
 			"content" =>$this->load->view('dashboardPayment/admin/batching-case', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function batching_case_detail()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load("OBV Batching Detail", $path, "Batching Case", "OBV Batching (Detail)"),
+			"content" =>$this->load->view('dashboardPayment/admin/batching-case-detail', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -102,8 +102,23 @@ class Dashboard_Payment_Admin extends CI_Controller {
 			'data_status' => $this->new_case->get_status(), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Admin - Generate CPV", $path, "Batching Case", "Generate CPV"),
+			"page" => $this->load("Payment Batching", $path, "Batching Case", "Payment Batching"),
 			"content" =>$this->load->view('dashboardPayment/admin/payment-batch', $get, true)
+		);
+		$this->load->view('template/default_template', $data);
+	}
+
+	public function payment_batch_detail()
+	{
+		$css = "";
+		$js = "";
+		$path = "";
+		$get = array(
+			'data_status' => $this->new_case->get_status(), 
+		);
+		$data = array(
+			"page" => $this->load(" Payment Batching Detail", $path, "Batching Case", "Payment Batching (Detail)"),
+			"content" =>$this->load->view('dashboardPayment/admin/payment-batch-detail', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
@@ -114,7 +129,7 @@ class Dashboard_Payment_Admin extends CI_Controller {
 		$js = "";
 		$path = "";
 		$data = array(
-			"page" => $this->load("Dashboard Payment Admin - CPV List", $path, "CPV List", ""),
+			"page" => $this->load("CPV List", $path, "CPV List", ""),
 			"content" =>$this->load->view('dashboardPayment/admin/list-cpv', false, true)
 		);
 		$this->load->view('template/default_template', $data);
@@ -129,7 +144,7 @@ class Dashboard_Payment_Admin extends CI_Controller {
 			'cpv_detail' => $this->new_case->cpv_detail($cpv_id), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Payment Admin - CPV Detail", $path, "CPV List", "CPV Detail"),
+			"page" => $this->load("CPV Detail", $path, "CPV List", "CPV Detail"),
 			"content" =>$this->load->view('dashboardPayment/admin/new-cpv-detail-cashless', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
@@ -144,9 +159,10 @@ class Dashboard_Payment_Admin extends CI_Controller {
 			'cpv_detail' => $this->new_case->cpv_detail($cpv_id), 
 		);
 		$data = array(
-			"page" => $this->load("Dashboard Payment Admin - CPV Detail", $path, "CPV List", "CPV Detail"),
+			"page" => $this->load("CPV Detail", $path, "CPV List", "CPV Detail"),
 			"content" =>$this->load->view('dashboardPayment/admin/new-cpv-detail-reimbursement', $get, true)
 		);
 		$this->load->view('template/default_template', $data);
 	}
+
 }

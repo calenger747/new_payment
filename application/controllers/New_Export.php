@@ -678,7 +678,6 @@ class New_Export extends CI_Controller {
 		$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($dirPath);
 
 		$sheet = $spreadsheet->getActiveSheet();
-    // $sheet->setCellValue('A1', 'Hello World !');
 		$styleText = [
 			'font' => [
 				'bold' => false,
@@ -697,17 +696,21 @@ class New_Export extends CI_Controller {
 			],
 		];
 
-		$sheet->setCellValue('A1', 
-			preg_replace('/[^0-9.]/', '',$totalAmount->acc_number).','.
-			'PT. AA International Indonesia'.','.
-			'IDR'.','.
-			$totalCover->cover.','.
-			'Transfer IH '.$totalAmount->abbreviation_name.','.
-			count($dataLaporan).','.
-			date("Ymd").','.
-			'finance@acrossasiaassist.co.id');
+		$sheet->setCellValue('A1', preg_replace('/[^0-9.]/', '',$totalAmount->acc_number));
+		$sheet->setCellValue('B1', 'PT. AA International Indonesia');
+		$sheet->setCellValue('C1', 'IDR');
+		$sheet->setCellValue('D1', $totalCover->cover);
+		$sheet->setCellValue('E1', 'Transfer IH '.$totalAmount->abbreviation_name);
+		$sheet->setCellValue('F1', count($dataLaporan));
+		$sheet->setCellValue('G1', date("Ymd"));
+		$sheet->setCellValue('H1', 'finance@acrossasiaassist.co.id');
 
 		$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('C1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('D1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('E1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('F1')->applyFromArray($styleText);
 
 		$tableIndex = 1;
 		$no = 0;
@@ -717,15 +720,19 @@ class New_Export extends CI_Controller {
 
 			$tableIndex++;
 			$no++;
-			$sheet->setCellValue('A'.$tableIndex, 
-				preg_replace('/[^0-9.]/', '',$dataLaporan[$i]->acc_number).','.
-				$dataLaporan[$i]->acc_name.','.
-				'IDR'.','.
-				$Cover->cover.','.
-				$dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id.','.
-				'');
+			$sheet->setCellValue('A'.$tableIndex, preg_replace('/[^0-9.]/', '',$dataLaporan[$i]->acc_number));
+			$sheet->setCellValue('B'.$tableIndex, $dataLaporan[$i]->acc_name);
+			$sheet->setCellValue('C'.$tableIndex, 'IDR');
+			$sheet->setCellValue('D'.$tableIndex, $Cover->cover);
+			$sheet->setCellValue('E'.$tableIndex, $dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id);
+			$sheet->setCellValue('F'.$tableIndex, '');
 
 			$spreadsheet->getActiveSheet()->getStyle('A'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('B'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('C'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('D'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('E'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('F'.$tableIndex)->applyFromArray($styleText);
 
 		}
 
@@ -776,17 +783,23 @@ class New_Export extends CI_Controller {
 			],
 		];
 
-		$sheet->setCellValue('A1', 
-			preg_replace('/[^0-9.]/', '',$totalAmount->acc_number).','.
-			'PT. AA International Indonesia'.','.
-			'IDR'.','.
-			$totalCover->cover.','.
-			'Transfer IH '.$totalAmount->abbreviation_name.','.
-			count($dataLaporan).','.
-			date("Ymd").','.
-			'finance@acrossasiaassist.co.id');
+		$sheet->setCellValue('A1', preg_replace('/[^0-9.]/', '',$totalAmount->acc_number));
+		$sheet->setCellValue('B1', 'PT. AA International Indonesia');
+		$sheet->setCellValue('C1', 'IDR');
+		$sheet->setCellValue('D1', $totalCover->cover);
+		$sheet->setCellValue('E1', 'Transfer SKN '.$totalAmount->abbreviation_name);
+		$sheet->setCellValue('F1', count($dataLaporan));
+		$sheet->setCellValue('G1', date("Ymd"));
+		$sheet->setCellValue('H1', 'finance@acrossasiaassist.co.id');
 
 		$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('C1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('D1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('E1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('F1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('G1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('H1')->applyFromArray($styleText);
 
 		$tableIndex = 1;
 		$no = 0;
@@ -796,18 +809,25 @@ class New_Export extends CI_Controller {
 
 			$tableIndex++;
 			$no++;
-			$sheet->setCellValue('A'.$tableIndex, 
-				preg_replace('/[^0-9.]/', '',$dataLaporan[$i]->acc_number).','.
-				$dataLaporan[$i]->acc_name.','.
-				'IDR'.','.
-				$Cover->cover.','.
-				$dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id.','.
-				$dataLaporan[$i]->bank.','.
-				'Y'.','.
-				'Y'.','.
-				'');
+			$sheet->setCellValue('A'.$tableIndex, preg_replace('/[^0-9.]/', '',$dataLaporan[$i]->acc_number));
+			$sheet->setCellValue('B'.$tableIndex, $dataLaporan[$i]->acc_name);
+			$sheet->setCellValue('C'.$tableIndex, 'IDR');
+			$sheet->setCellValue('D'.$tableIndex, $Cover->cover);
+			$sheet->setCellValue('E'.$tableIndex, $dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id);
+			$sheet->setCellValue('F'.$tableIndex, $dataLaporan[$i]->bank);
+			$sheet->setCellValue('G'.$tableIndex, 'Y');
+			$sheet->setCellValue('H'.$tableIndex, 'Y');
+			$sheet->setCellValue('I'.$tableIndex, '');
 
 			$spreadsheet->getActiveSheet()->getStyle('A'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('B'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('C'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('D'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('E'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('F'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('G'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('H'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('I'.$tableIndex)->applyFromArray($styleText);
 
 		}
 
@@ -859,17 +879,23 @@ class New_Export extends CI_Controller {
 			],
 		];
 
-		$sheet->setCellValue('A1', 
-			preg_replace('/[^0-9.]/', '',$totalAmount->acc_number).','.
-			'PT. AA International Indonesia'.','.
-			'IDR'.','.
-			$totalCover->cover.','.
-			'Transfer SKN '.$totalAmount->abbreviation_name.','.
-			count($dataLaporan).','.
-			date("Ymd").','.
-			'finance@acrossasiaassist.co.id');
+		$sheet->setCellValue('A1', preg_replace('/[^0-9.]/', '',$totalAmount->acc_number));
+		$sheet->setCellValue('B1', 'PT. AA International Indonesia');
+		$sheet->setCellValue('C1', 'IDR');
+		$sheet->setCellValue('D1', $totalCover->cover);
+		$sheet->setCellValue('E1', 'Transfer SKN '.$totalAmount->abbreviation_name);
+		$sheet->setCellValue('F1', count($dataLaporan));
+		$sheet->setCellValue('G1', date("Ymd"));
+		$sheet->setCellValue('H1', 'finance@acrossasiaassist.co.id');
 
 		$spreadsheet->getActiveSheet()->getStyle('A1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('C1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('D1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('E1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('F1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('G1')->applyFromArray($styleText);
+		$spreadsheet->getActiveSheet()->getStyle('H1')->applyFromArray($styleText);
 
 		$tableIndex = 1;
 		$no = 0;
@@ -879,18 +905,25 @@ class New_Export extends CI_Controller {
 
 			$tableIndex++;
 			$no++;
-			$sheet->setCellValue('A'.$tableIndex, 
-				preg_replace('/[^0-9.]/', '',$dataLaporan[$i]->acc_number).','.
-				$dataLaporan[$i]->acc_name.','.
-				'IDR'.','.
-				$Cover->cover.','.
-				$dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id.','.
-				$dataLaporan[$i]->bank.','.
-				'Y'.','.
-				'Y'.','.
-				'');
+			$sheet->setCellValue('A'.$tableIndex, preg_replace('/[^0-9.]/', '',$dataLaporan[$i]->acc_number));
+			$sheet->setCellValue('B'.$tableIndex, $dataLaporan[$i]->acc_name);
+			$sheet->setCellValue('C'.$tableIndex, 'IDR');
+			$sheet->setCellValue('D'.$tableIndex, $Cover->cover);
+			$sheet->setCellValue('E'.$tableIndex, $dataLaporan[$i]->abbreviation_name.' '.$dataLaporan[$i]->case_id);
+			$sheet->setCellValue('F'.$tableIndex, $dataLaporan[$i]->bank);
+			$sheet->setCellValue('G'.$tableIndex, 'Y');
+			$sheet->setCellValue('H'.$tableIndex, 'Y');
+			$sheet->setCellValue('I'.$tableIndex, '');
 
 			$spreadsheet->getActiveSheet()->getStyle('A'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('B'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('C'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('D'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('E'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('F'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('G'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('H'.$tableIndex)->applyFromArray($styleText);
+			$spreadsheet->getActiveSheet()->getStyle('I'.$tableIndex)->applyFromArray($styleText);
 
 		}
 

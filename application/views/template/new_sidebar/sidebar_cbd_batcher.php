@@ -27,7 +27,7 @@
                 <li class=""> <a href="<?= base_url(); ?>Dashboard_CBD_Batcher/case_data" aria-expanded="false"><i class="mdi mdi-database"></i><span class="hide-menu">Data Case</span></a></li>
 
                 <li class="nav-small-cap">BATCHING CASE</li>
-                <li class=""> <a href="<?= base_url(); ?>Dashboard_CBD_Batcher/initial_batching" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Batching Case</span></a></li>
+                <li class=""> <a href="<?= base_url(); ?>Dashboard_CBD_Batcher/initial_batching" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Document Batching</span></a></li>
 
                 <!-- <li class="nav-small-cap">BATCHING CASE</li>
                 <li> <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><i class="mdi mdi-group"></i><span class="hide-menu">Batching Case</span></a>
