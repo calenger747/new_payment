@@ -488,6 +488,13 @@ class M_New_Case extends CI_Model{
         }
         return $output;
     }
+
+    // GET BANK CLIENT
+    public function get_bank_cient($bank)
+    {
+       $query = $this->db->query("SELECT name AS bank_name FROM bank WHERE id = '$bank'");
+        return $query->row(); 
+    }
     // END OF REVISION
 
     public function cek_case_rebatch($case_id, $status_batch)
@@ -638,10 +645,9 @@ class M_New_Case extends CI_Model{
     		client.full_name AS client_name,
     		client.abbreviation_name AS abbreviation_name,
     		client.account_no AS acc_number,
-    		bank.`name` 
+    		client.bank AS bank 
     		FROM client
     		JOIN `case` ON `case`.client = client.id
-    		JOIN bank ON client.bank = bank.id
     		WHERE `case`.id IN('$case_id')
     		GROUP BY client.id");
     	return $query->row();
@@ -2096,14 +2102,13 @@ class M_New_Case extends CI_Model{
     	client.full_name AS client_name,
     	client.abbreviation_name AS abbreviation_name,
     	client.account_no AS acc_number,
-    	bank.`name` AS bank
+    	client.bank AS bank
     	FROM `case` 
     	JOIN category ON `case`.category = category.id
     	JOIN client ON `case`.client = client.id
     	JOIN member ON `case`.patient = member.id
     	JOIN provider ON `case`.provider = provider.id
     	JOIN plan ON `case`.plan = plan.id
-    	JOIN bank ON client.bank = bank.id
     	JOIN program ON program.client = client.id
     	JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
     	JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id
@@ -2127,7 +2132,6 @@ class M_New_Case extends CI_Model{
     	JOIN member ON `case`.patient = member.id
     	JOIN provider ON `case`.provider = provider.id
     	JOIN plan ON `case`.plan = plan.id
-    	JOIN bank ON client.bank = bank.id
     	JOIN worksheet ON `case`.id = worksheet.`case`
     	JOIN program ON program.client = client.id
     	JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
@@ -2156,7 +2160,6 @@ class M_New_Case extends CI_Model{
     	JOIN member ON `case`.patient = member.id
     	JOIN provider ON `case`.provider = provider.id
     	JOIN plan ON `case`.plan = plan.id
-    	JOIN bank ON client.bank = bank.id
     	JOIN program ON program.client = client.id
     	JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
     	JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id
@@ -2221,7 +2224,6 @@ class M_New_Case extends CI_Model{
     	JOIN member ON `case`.patient = member.id
     	JOIN provider ON `case`.provider = provider.id
     	JOIN plan ON `case`.plan = plan.id
-    	JOIN bank ON client.bank = bank.id
     	JOIN program ON program.client = client.id
     	JOIN new_history_batch_detail ON new_history_batch_detail.case_id = `case`.id
     	JOIN new_history_batch ON new_history_batch_detail.history_id = new_history_batch.id
@@ -3616,7 +3618,7 @@ class M_New_Case extends CI_Model{
             new_cpv_list.case_type AS case_type,
             client.full_name AS client_name,
             client.account_no AS account_no,
-            bank.`name` AS bank,
+            client.bank AS bank,
             SUM(worksheet_header.total_cover) AS total_cover,
             new_cpv_list.approve AS status_approve"
         );
@@ -3637,7 +3639,7 @@ class M_New_Case extends CI_Model{
         $this->db->join($this->table_2_2, $this->table_2.'.id ='.$this->table_2_2.'.cpv_id');
         $this->db->join($this->table_2_3, $this->table_2_2.'.case_id ='.$this->table_2_3.'.id');
         $this->db->join($this->table_2_4, $this->table_2_3.'.client ='.$this->table_2_4.'.id');
-        $this->db->join($this->table_2_5, $this->table_2_4.'.bank ='.$this->table_2_5.'.id');
+        // $this->db->join($this->table_2_5, $this->table_2_4.'.bank ='.$this->table_2_5.'.id');
         $this->db->join($this->table_2_6, $this->table_2_3.'.id ='.$this->table_2_6.'.`case`');
         $this->db->order_by($column, $order_by);
         $this->db->group_by('cpv_id');

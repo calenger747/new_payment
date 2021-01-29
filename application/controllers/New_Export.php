@@ -39,6 +39,13 @@ class New_Export extends CI_Controller {
 		$dataLaporan = $this->new_case->laporan_cpv_cashless_2($cpv_id);
 		$totalAmount = $this->new_case->cover_cpv_cashless_2($cpv_id);
 
+		if ($totalAmount->bank == '') {
+			$bank = '';
+		} else {
+			$bank1 = $this->new_case->get_bank_cient($totalAmount->bank);
+			$bank = $bank1->bank_name;
+		}
+
 		$caseCover = $this->new_case->case_cover_cashless_2($cpv_id);
 
 		$totalCover = $this->case->total_cover($caseCover->keyword);
@@ -113,7 +120,7 @@ class New_Export extends CI_Controller {
 		$sheet->setCellValue('E4', $totalCover->cover);
 		$sheet->setCellValue('E6', $totalAmount->cpv_number);
 		$sheet->setCellValue('E10', $totalAmount->client_name);
-		$sheet->setCellValue('E11', $totalAmount->bank);
+		$sheet->setCellValue('E11', $bank);
 		$sheet->setCellValue('E12', preg_replace('/[^0-9.]/', '',$totalAmount->acc_number));
 		$sheet->setCellValue('E13', count($dataLaporan));
 

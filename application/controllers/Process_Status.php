@@ -324,6 +324,12 @@ class Process_Status extends CI_Controller {
 			// 	$output['message'] = "WS Actual Was Exceed 1.000.000.000";
 			// } else {
 			$header_cpv = $this->new_case->header_cpv(implode("','", $data));
+			// if ($header_cpv->bank == '') {
+			// 	$source_bank = '';
+			// } else {
+			// 	$bank1 = $this->new_case->get_bank_cient($header_cpv->bank);
+			// 	$source_bank = $bank1->bank_name;
+			// }
 
 			$cpv_header = array(
 				'cpv_number' 		=> $header_cpv->abbreviation_name.'/Batch/'.date("YmdHis"),
@@ -485,10 +491,10 @@ class Process_Status extends CI_Controller {
 
 			$name2 = str_replace(' ', '_', $name);
 
-			$data = array(
-				'tes' => $name, 
-			);
-			$this->db->insert('tes', $data);
+			// $data = array(
+			// 	'tes' => $name, 
+			// );
+			// $this->db->insert('tes', $data);
 			$data_x = array(
 				'payment_date' => $payment_date,
 				'upload_proof_of_payment' => $name,

@@ -436,6 +436,12 @@ class New_Datatables extends CI_Controller {
 				$type = 'Reimbursement';
 			} else if ($case->case_type == '2') {
 				$type = 'Cashless';
+				if ($case->bank == '') {
+					$bank = '';
+				} else {
+					$bank1 = $this->new_case->get_bank_cient($case->bank);
+					$bank = $bank1->bank_name;
+				}
 			}
 
 			if ($this->session->userdata('level_user') == '-1' || $this->session->userdata('level_user') == '94') {
@@ -447,7 +453,7 @@ class New_Datatables extends CI_Controller {
 			} else {
 				$approve = '';
 			}
-			
+
 			$data[] = array(
 				'button' 			=> '<center>'.
 				$approve.'
@@ -466,7 +472,7 @@ class New_Datatables extends CI_Controller {
 
 				"cpv_number"		=> htmlspecialchars_decode(htmlentities($case->cpv_number)),
 				"client" 			=> htmlspecialchars_decode(htmlentities($case->client_name)),
-				"source_account"	=> htmlspecialchars_decode(htmlentities($case->bank)).' - '.htmlspecialchars_decode(htmlentities(preg_replace('/[^0-9.]/', '',$case->account_no))),
+				"source_account"	=> htmlspecialchars_decode(htmlentities($bank)).' - '.htmlspecialchars_decode(htmlentities(preg_replace('/[^0-9.]/', '',$case->account_no))),
 				"created_date" 		=> htmlspecialchars_decode(htmlentities(date('d/m/Y H:i:s', strtotime($case->created_date)))),
 				"total_record" 		=> '<p class="text-right">'.htmlspecialchars_decode(htmlentities($count->record)).'</p>',
 				"total_cover" 		=> '<p class="text-right">Rp '.htmlspecialchars_decode(htmlentities(number_format($case->total_cover,2,',','.'))).'</p>',

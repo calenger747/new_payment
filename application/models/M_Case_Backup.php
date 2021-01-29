@@ -1052,7 +1052,7 @@ class M_Case_Backup extends CI_Model {
     	SUM(worksheet.cover) AS cover,
     	SUM(worksheet.excess) AS excess
     	FROM worksheet
-    	WHERE worksheet.`case` IN ($key)";
+    	WHERE worksheet.`case` IN ('$key')";
     	$prepared = $this->db->query($sql);
     	return $prepared->row();
     }
